@@ -1,4 +1,4 @@
 Debug.win32
-./doc
-./bin
+doc
+bin
 tmp

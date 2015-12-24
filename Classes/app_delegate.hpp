@@ -1,5 +1,5 @@
-#ifndef  _APP_DELEGATE_H_
-#define  _APP_DELEGATE_H_
+#ifndef C2XA_APP_DELEGATE_HPP
+#define C2XA_APP_DELEGATE_HPP
 
 #include "cocos2d.h"
 
@@ -8,11 +8,11 @@
 
 The reason for implement as private inheritance is to hide some interface call by Director.
 */
-class  AppDelegate : private cocos2d::Application
+class app_delegete : private cocos2d::Application
 {
 public:
-    AppDelegate();
-    virtual ~AppDelegate();
+    app_delegete();
+    virtual ~app_delegete();
 
     virtual void initGLContextAttrs();
 
@@ -36,5 +36,5 @@ public:
     virtual void applicationWillEnterForeground();
 };
 
-#endif // _APP_DELEGATE_H_
+#endif// C2XA_APP_DELEGATE_HPP
 

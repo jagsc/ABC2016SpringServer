@@ -79,12 +79,16 @@ namespace c2xa
                     {
                         std::advance( end_, 1 );
                     }
-                    std::advance( end_, 1 );
                     return true;
                 };
                 auto scan = [ & ]
                 {
-                    auto result_ = std::sscanf( std::string{ begin_, end_ }.c_str(), "%f,%f,%f,%f,%f,%f\n", &a_.x, &a_.y, &a_.z, &g_.x, &g_.y, &g_.z );
+                    auto result_ = std::sscanf
+                    (
+                        std::string{ begin_, end_ }.c_str(),
+                        "%f,%f,%f,%f,%f,%f",
+                        &a_.x, &a_.y, &a_.z, &g_.x, &g_.y, &g_.z
+                    );
                     if( result_ == EOF || result_ < 6 )
                     {
                         return false;
@@ -102,6 +106,7 @@ namespace c2xa
                     {
                         break;
                     }
+                    std::advance( end_, 1 );
                     begin_ = end_;
                 }
 

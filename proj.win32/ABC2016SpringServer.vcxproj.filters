@@ -16,6 +16,9 @@
     <Filter Include="src\c2xa\scene">
       <UniqueIdentifier>{06dc7c5a-d87c-4bf2-9edf-d0abe6bdfc2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\c2xa\experimental">
+      <UniqueIdentifier>{385263fc-bff1-41c1-a50a-9149e692f053}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -40,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\c2xa_config.hpp">
       <Filter>src\c2xa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\experimental\data_analyzer.hpp">
+      <Filter>src\c2xa\experimental</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

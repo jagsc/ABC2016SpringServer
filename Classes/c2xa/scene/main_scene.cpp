@@ -18,7 +18,7 @@ bool main_scene::init()
 
     setName( "main_scene" );
 
-    addChild( experimental::data_analyzer::create() );
+    addChild( experimental::data_viewer::create() );
     
     return true;
 }

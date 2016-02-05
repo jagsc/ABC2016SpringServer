@@ -14,10 +14,10 @@
 
 using namespace c2xa;
 
-fast_fourier_transform::fast_fourier_transform( const int n )
+fast_fourier_transform::fast_fourier_transform( const int n_ )
 {
-    this->n = n;
-    ip = new int[ 2 + std::sqrt( 0.5 * n ) + 1 ];
+    this->n = n_ * 2;
+    ip = new int[ 2 + std::sqrt( n / 2 ) + 1 ];
     w = new double[ n * 5 / 4 ];
     ip[ 0 ] = 0;
 }

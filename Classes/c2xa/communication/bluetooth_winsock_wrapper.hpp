@@ -15,7 +15,7 @@ private:
     CSADDR_INFO bts_info_;
     WSAQUERYSET bts_quset_;
     SOCKET bts_sock_;
-    GUID bts_spp_uuid_;
+    //GUID bts_spp_uuid_;
 public:
 
     int init_wsadata();

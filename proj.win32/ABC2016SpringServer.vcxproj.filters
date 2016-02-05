@@ -19,6 +19,9 @@
     <Filter Include="src\c2xa\experimental">
       <UniqueIdentifier>{385263fc-bff1-41c1-a50a-9149e692f053}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\c2xa\communication">
+      <UniqueIdentifier>{58191651-be87-4b3d-8bfc-9b5625982dc2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -29,6 +32,12 @@
     </ClCompile>
     <ClCompile Include="..\Classes\app_delegate.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\experimental\fast_fourier_transform.cpp">
+      <Filter>src\c2xa\experimental</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\communication\bluetooth_winsock_wrapper.cpp">
+      <Filter>src\c2xa\communication</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +55,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\experimental\data_analyzer.hpp">
       <Filter>src\c2xa\experimental</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\experimental\fast_fourier_transform.hpp">
+      <Filter>src\c2xa\experimental</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\bluetooth_winsock_wrapper.hpp">
+      <Filter>src\c2xa\communication</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

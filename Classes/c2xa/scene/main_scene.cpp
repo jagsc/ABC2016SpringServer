@@ -3,8 +3,12 @@
     @author êVÅTåéÇ©ÇËÇ»
     @date   created on 2015/09/24
 ****************************************************************************************/
+
 #include <c2xa/scene/main_scene.hpp>
-#include <c2xa/experimental/data_analyzer.hpp>
+#include <c2xa/communication/parse.hpp>
+#include <c2xa/sample.hpp>
+
+#include <c2xa/debug/sample_viewer.hpp>
 
 using namespace c2xa::scene;
 
@@ -39,13 +43,10 @@ bool main_scene::init()
         return false;
     }
 
-    //auto dv_ = experimental::data_viewer::create();
-    //dv_->setName( "dv" );
-    //addChild( dv_, 3 );
-
-    auto viewer_ = experimental::sample_viewer::create();
+    auto viewer_ = debug::sample_viewer::create();
     viewer_->setName( "sample_viewer" );
     addChild( viewer_, 3 );
+
     auto draw_ = DrawNode::create();
     draw_->setName( "draw_node" );
     addChild( draw_, 5 );
@@ -59,10 +60,13 @@ void main_scene::update( float )
     auto ret_ = bluetooth_server_.recv_data( buffer_, sizeof( buffer_ ), 0 );
     if( ret_ > 0 )
     {
-        cocos2d::log( "[BT log] %s\n", buffer_ );
-        sample_.push( buffer_ );
+        //cocos2d::log( "[BT log] %s\n", buffer_ );
+        for( auto&& i : communication::parse( buffer_ ) )
+        {
+            sample_.push( i );
+        }
 
-        auto viewer_ = static_cast<experimental::sample_viewer*>( getChildByName( "sample_viewer" ) );
+        auto viewer_ = static_cast<debug::sample_viewer*>( getChildByName( "sample_viewer" ) );
         if( viewer_ )
         {
             viewer_->update( sample_ );

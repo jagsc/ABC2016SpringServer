@@ -7,9 +7,9 @@
 #define C2XA_SCENE_MAIN_SCENE_HPP
 
 #include <cocos2d.h>
-#include <c2xa/experimental/data_analyzer.hpp>
-#include <c2xa/experimental/fast_fourier_transform.hpp>
 #include <c2xa/communication/bluetooth_winsock_wrapper.hpp>
+#include <c2xa/sample.hpp>
+#include <c2xa/math/fast_fourier_transform.hpp>
 
 namespace c2xa
 {
@@ -22,7 +22,7 @@ namespace c2xa
             static constexpr unsigned int sample_size = 256;
             bthserver bluetooth_server_;
             fft fft_;
-            experimental::sample<sample_size> sample_;
+            sample<sample_size> sample_;
             char buffer_[ 2024 ];
 
         public:

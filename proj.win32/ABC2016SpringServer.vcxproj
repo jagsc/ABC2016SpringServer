@@ -146,22 +146,32 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\app_delegate.cpp" />
     <ClCompile Include="..\Classes\c2xa\communication\bluetooth_winsock_wrapper.cpp" />
-    <ClCompile Include="..\Classes\c2xa\experimental\fast_fourier_transform.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp" />
     <ClCompile Include="..\Classes\c2xa\scene\main_scene.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\app_delegate.hpp" />
-    <ClInclude Include="..\Classes\c2xa\c2xa_config.hpp" />
+    <ClInclude Include="..\Classes\c2xa\config.hpp" />
     <ClInclude Include="..\Classes\c2xa\communication\bluetooth_winsock_wrapper.hpp" />
+    <ClInclude Include="..\Classes\c2xa\communication\data.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\parse.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\debug\sample_viewer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\experimental\data_analyzer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\experimental\fast_fourier_transform.hpp">
+    <ClInclude Include="..\Classes\c2xa\math\fast_fourier_transform.hpp" />
+    <ClInclude Include="..\Classes\c2xa\sample.hpp">
       <SubType>
       </SubType>
     </ClInclude>

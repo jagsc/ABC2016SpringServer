@@ -22,6 +22,12 @@
     <Filter Include="src\c2xa\communication">
       <UniqueIdentifier>{58191651-be87-4b3d-8bfc-9b5625982dc2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\c2xa\math">
+      <UniqueIdentifier>{e21f934c-10a8-48bc-9daf-9ab63f880024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\c2xa\debug">
+      <UniqueIdentifier>{a5aff4e1-bb56-4522-b076-6b5982bb4512}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,11 +39,11 @@
     <ClCompile Include="..\Classes\app_delegate.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\c2xa\experimental\fast_fourier_transform.cpp">
-      <Filter>src\c2xa\experimental</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\communication\bluetooth_winsock_wrapper.cpp">
       <Filter>src\c2xa\communication</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp">
+      <Filter>src\c2xa\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,17 +56,29 @@
     <ClInclude Include="..\Classes\app_delegate.hpp">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\c2xa_config.hpp">
-      <Filter>src\c2xa</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\experimental\data_analyzer.hpp">
-      <Filter>src\c2xa\experimental</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\experimental\fast_fourier_transform.hpp">
       <Filter>src\c2xa\experimental</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\bluetooth_winsock_wrapper.hpp">
       <Filter>src\c2xa\communication</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\math\fast_fourier_transform.hpp">
+      <Filter>src\c2xa\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\sample.hpp">
+      <Filter>src\c2xa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\parse.hpp">
+      <Filter>src\c2xa\communication</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\data.hpp">
+      <Filter>src\c2xa\communication</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\debug\sample_viewer.hpp">
+      <Filter>src\c2xa\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\config.hpp">
+      <Filter>src\c2xa</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 #include <app_delegate.hpp>
 #include <c2xa/scene/main_scene.hpp>
 //#include <c2xa/scene/title_scene.hpp>
-#include <c2xa/c2xa_config.hpp>
+#include <c2xa/config.hpp>
 //#include <c2xa/utility.hpp>
 
 using namespace cocos2d;

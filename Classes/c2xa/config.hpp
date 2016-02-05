@@ -1,10 +1,10 @@
 ﻿/************************************************************************************//**
-    @file	 c2xa/c2xa_config.hpp
-    @author  新ゝ月(NewNotMoon)
-    @date    created on 2015/08/30
+    @file    c2xa/c2xa_config.hpp
+    @author  新ゝ月かりな(NewNotMoon)
+    @date    created on 2015/12/24
 ****************************************************************************************/
-#ifndef C2XA_C2XA_CONFIG_HPP
-#define C2XA_C2XA_CONFIG_HPP
+#ifndef C2XA_CONFIG_HPP
+#define C2XA_CONFIG_HPP
 
 #include <cocos2d.h>
 
@@ -17,4 +17,4 @@ namespace c2xa
     static cocos2d::Size const app_size      { app_width, app_height };
 }
 
-#endif//C2XA_C2XA_CONFIG_HPP
+#endif//C2XA_CONFIG_HPP

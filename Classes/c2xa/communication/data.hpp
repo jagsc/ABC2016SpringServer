@@ -28,8 +28,10 @@ namespace c2xa
         float y;
         float z;
     };
-
-    using data = std::tuple<acceleration, gyro>;
+    using data = std::tuple<unsigned long,acceleration, gyro>;
+    static constexpr unsigned data_timestamp = 0;
+    static constexpr unsigned data_acceleration = 1;
+    static constexpr unsigned data_gyro = 2;
 }
 
 #endif//C2XA_COMMUNICATION_DATA_HPP

@@ -83,20 +83,20 @@ namespace c2xa
                     auto prev_ = sample_.cbegin();
                     auto now_ = std::next( prev_ );
 
-                    float prevv_ = std::get<0>( *prev_ ).x;
-                    float nowv_ = 0.5 * prevv_ + 0.5 * std::get<0>( *now_ ).x;
+                    float prevv_ = std::get<data_acceleration>( *prev_ ).x;
+                    float nowv_ = 0.5 * prevv_ + 0.5 * std::get<data_acceleration>( *now_ ).x;
 
                     for( int i = 0; now_ != sample_.cend(); ++i )
                     {
                         // a.x
                         draw_->drawLine(
-                            trans_ + Vec2{ i * app_width / sample_size, std::get<0>( *prev_ ).x * unit_height / unit },
-                            trans_ + Vec2{ ( i + 1 ) * app_width / sample_size, std::get<0>( *now_ ).x * unit_height / unit },
+                            trans_ + Vec2{ i * app_width / sample_size, std::get<data_acceleration>( *prev_ ).x * unit_height / unit },
+                            trans_ + Vec2{ ( i + 1 ) * app_width / sample_size, std::get<data_acceleration>( *now_ ).x * unit_height / unit },
                             Color4F{ 1, 0, 0, 0.5f } );
 
 
                         // LowPass a.x
-                        nowv_ = 0.5 * prevv_ + 0.5 * std::get<0>( *now_ ).x;
+                        nowv_ = 0.5 * prevv_ + 0.5 * std::get<data_acceleration>( *now_ ).x;
                         draw_->drawLine(
                             trans_ + Vec2{ i * app_width / sample_size, prevv_ * unit_height / unit },
                             trans_ + Vec2{ ( i + 1 ) * app_width / sample_size, nowv_ * unit_height / unit },

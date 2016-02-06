@@ -90,7 +90,7 @@ void main_scene::update( float )
                 for( int i = 0; i < sample_size; ++i )
                 {
                     CCASSERT( it_ != sample_.cend(), "" );
-                    data_[ i * 2 ] = static_cast<double>( std::get<0>( *it_ ).x )
+                    data_[ i * 2 ] = static_cast<double>( std::get<data_acceleration>( *it_ ).x )
                         * ( 0.54 - 0.46 * std::cos( 2 * M_PI * i / ( sample_size * 2 ) ) ); // hamming window
                     data_[ i * 2 + 1 ] = 0; // imaginary part
                     ++it_;
@@ -102,19 +102,17 @@ void main_scene::update( float )
                 if( draw_ )
                 {
                     draw_->clear();
-                    int c = 0;
                     // 直流スキップ
                     for( int i = 1; i < sample_size / 2; ++i )
                     {
                         draw_->drawSegment(
-                            cocos2d::Vec2{ ( c + 0.5f ) * app_width / ( sample_size + 1 ), 0 },
+                            cocos2d::Vec2{ ( i - 0.5f ) * app_width / ( sample_size + 1 ), 0 },
                             cocos2d::Vec2{
-                            ( c + 0.5f ) * app_width / ( sample_size + 1 ),
-                            ( static_cast<float>( std::pow( data_[ i * 2 ], 2 ) + std::pow( data_[ i * 2 + 1 ], 2 ) ) / sample_size )
-                        },
+                                ( i - 0.5f ) * app_width / ( sample_size + 1 ),
+                                ( static_cast<float>( std::pow( data_[ i * 2 ], 2 ) + std::pow( data_[ i * 2 + 1 ], 2 ) ) / sample_size )
+                            },
                             app_width / sample_size / 2,
                             cocos2d::Color4F{ 0, 0, 1, 0.5f } );
-                        ++c;
                     }
                 }
             }

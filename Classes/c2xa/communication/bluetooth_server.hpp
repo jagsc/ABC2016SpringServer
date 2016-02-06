@@ -1,9 +1,9 @@
-#pragma once 
+Ôªø#pragma once 
 #ifndef C2XA_COMMUNICATION_BLUETOOTH_SERVER_HPP
 #define C2XA_COMMUNICATION_BLUETOOTH_SERVER_HPP
 
 #include <c2xa/communication/windows_socket_api.hpp>
-// include èáèòíçà”
+// include È†ÜÂ∫èÊ≥®ÊÑè
 #include <ws2bth.h>
 
 #include <c2xa/optional.hpp>

@@ -45,14 +45,15 @@ namespace c2xa
                 auto result_ = std::sscanf
                     (
                         std::string{ begin_, end_ }.c_str(),
-                        "%f,%f,%f,%f,%f,%f",
-                        &std::get<0>( data_ ).x,
-                        &std::get<0>( data_ ).y,
-                        &std::get<0>( data_ ).z,
-                        &std::get<1>( data_ ).x,
-                        &std::get<1>( data_ ).y,
-                        &std::get<1>( data_ ).z
-                        );
+                        "%ld,%f,%f,%f,%f,%f,%f",
+                        &std::get<data_timestamp>( data_ ),
+                        &std::get<data_acceleration>( data_ ).x,
+                        &std::get<data_acceleration>( data_ ).y,
+                        &std::get<data_acceleration>( data_ ).z,
+                        &std::get<data_gyro>( data_ ).x,
+                        &std::get<data_gyro>( data_ ).y,
+                        &std::get<data_gyro>( data_ ).z
+                    );
                 if( result_ == EOF || result_ < 6 )
                 {
                     return false;

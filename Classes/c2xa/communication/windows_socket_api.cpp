@@ -19,7 +19,8 @@
 
 */
 
-#include <c2xa/communication/winsock.hpp>
+#include <c2xa/communication/windows_socket_api.hpp>
 
+unsigned int c2xa::windows_socket_api::count_ = 0;
 WSADATA c2xa::windows_socket_api::winsock_api_ = {};
 WSADATA* c2xa::windows_socket_api::winsock_api_ptr_ = nullptr;

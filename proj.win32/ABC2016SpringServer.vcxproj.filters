@@ -45,7 +45,7 @@
     <ClCompile Include="..\Classes\c2xa\communication\bluetooth_server.cpp">
       <Filter>src\c2xa\communication</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\c2xa\communication\winsock.cpp">
+    <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
       <Filter>src\c2xa\communication</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,10 +86,10 @@
     <ClInclude Include="..\Classes\c2xa\optional.hpp">
       <Filter>src\c2xa</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\communication\winsock.hpp">
+    <ClInclude Include="..\Classes\c2xa\communication\bluetooth_server.hpp">
       <Filter>src\c2xa\communication</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\communication\bluetooth_server.hpp">
+    <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <Filter>src\c2xa\communication</Filter>
     </ClInclude>
   </ItemGroup>

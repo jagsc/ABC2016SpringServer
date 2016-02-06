@@ -146,7 +146,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\app_delegate.cpp" />
     <ClCompile Include="..\Classes\c2xa\communication\bluetooth_server.cpp" />
-    <ClCompile Include="..\Classes\c2xa\communication\winsock.cpp">
+    <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -156,7 +156,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\app_delegate.hpp" />
-    <ClInclude Include="..\Classes\c2xa\communication\winsock.hpp">
+    <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <SubType>
       </SubType>
     </ClInclude>

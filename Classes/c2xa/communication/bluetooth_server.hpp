@@ -2,7 +2,9 @@
 #ifndef C2XA_COMMUNICATION_BLUETOOTH_SERVER_HPP
 #define C2XA_COMMUNICATION_BLUETOOTH_SERVER_HPP
 
-#include <c2xa/communication/winsock.hpp>
+#include <c2xa/communication/windows_socket_api.hpp>
+// include èáèòíçà”
+#include <ws2bth.h>
 
 #include <c2xa/optional.hpp>
 
@@ -32,7 +34,7 @@ namespace c2xa
         class listen_server
         {
         private:
-            windows_socket_api wsa_;
+            wsa wsa_;
             SOCKADDR_BTH address_;
             CSADDR_INFO  info_;
             WSAQUERYSET  quset_;

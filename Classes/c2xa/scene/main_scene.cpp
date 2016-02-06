@@ -70,7 +70,7 @@ void main_scene::update( float )
             cocos2d::log( "[BT log] %s\n", buffer_ );
             for( auto&& i : communication::parse( buffer_ ) )
             {
-                sample_.push( i );
+                sample_.push( std::forward<decltype(i)>( i ) );
             }
 
             auto viewer_ = static_cast<debug::sample_viewer*>( getChildByName( "sample_viewer" ) );

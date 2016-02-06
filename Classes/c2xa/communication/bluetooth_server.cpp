@@ -1,4 +1,4 @@
-
+ï»¿
 #include <c2xa/exception.hpp>
 #include <c2xa/communication/bluetooth_server.hpp>
 
@@ -10,7 +10,7 @@ listen_server::listen_server()
     address_ = {};
 
 
-    // listen—pƒ\ƒPƒbƒgì¬
+    // listenç”¨ã‚½ã‚±ãƒƒãƒˆä½œæˆ
     if( INVALID_SOCKET == ( listen_socket_ = ::socket( AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM ) ) )
     {
         C2XA_THROW( bluetooth_exception, "listen_socket create failed." );

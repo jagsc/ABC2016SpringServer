@@ -92,6 +92,9 @@
     <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <Filter>src\c2xa\communication</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\math\sample.hpp">
+      <Filter>src\c2xa\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

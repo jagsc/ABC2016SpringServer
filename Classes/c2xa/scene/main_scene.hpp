@@ -9,6 +9,7 @@
 #include <cocos2d.h>
 #include <c2xa/communication/bluetooth_server.hpp>
 #include <c2xa/sample.hpp>
+#include <c2xa/math/sample.hpp>
 #include <c2xa/math/fast_fourier_transform.hpp>
 
 namespace c2xa
@@ -24,6 +25,7 @@ namespace c2xa
             std::unique_ptr<bluetooth::connection_server> connection_server_;
             fft fft_;
             sample<sample_size> sample_;
+            math::sample<data,32,256> sampler_;
             char buffer_[ 2024 ];
 
         public:

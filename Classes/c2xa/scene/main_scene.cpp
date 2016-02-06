@@ -7,7 +7,6 @@
 #include <c2xa/exception.hpp>
 #include <c2xa/scene/main_scene.hpp>
 #include <c2xa/communication/parse.hpp>
-#include <c2xa/sample.hpp>
 
 #include <c2xa/debug/sample_viewer.hpp>
 
@@ -44,9 +43,16 @@ bool main_scene::init()
     viewer_->setName( "sample_viewer" );
     addChild( viewer_, 3 );
 
+    auto viewer2_ = debug::sample_viewer2::create();
+    viewer2_->setName( "sample_viewer2" );
+    addChild( viewer2_, 4 );
+
     auto draw_ = DrawNode::create();
     draw_->setName( "draw_node" );
     addChild( draw_, 5 );
+
+    auto bg_ = LayerColor::create( Color4B::WHITE, app_width, app_height );
+    addChild( bg_, 1 );
 
     return true;
 }
@@ -67,16 +73,29 @@ void main_scene::update( float )
         auto state_ = connection_server_->receive( buffer_, sizeof( buffer_ ), 0 );
         if( state_ == bluetooth::connection_server::socket_state::success )
         {
-            cocos2d::log( "[BT log] %s\n", buffer_ );
+            //cocos2d::log( "[BT log] %s", buffer_ );
             for( auto&& i : communication::parse( buffer_ ) )
             {
-                sample_.push( std::forward<decltype(i)>( i ) );
+                auto tmp = std::get<1>( i );
+                sample_.push( tmp );
+                sampler_.push(
+                    static_cast<std::chrono::nanoseconds>( std::get<0>( i ) ),
+                    std::get<1>( i ),
+                    []( unsigned left_, unsigned right_, data before_data_, data data_ )
+                {
+                    return ( data_ * left_ + before_data_ * ( right_ - left_ ) ) / right_;
+                } );
             }
 
             auto viewer_ = static_cast<debug::sample_viewer*>( getChildByName( "sample_viewer" ) );
             if( viewer_ )
             {
                 viewer_->update( sample_ );
+            }
+            auto viewer2_ = static_cast<debug::sample_viewer2*>( getChildByName( "sample_viewer2" ) );
+            if( viewer2_ )
+            {
+                viewer2_->update( sampler_ );
             }
 
             // FFT
@@ -90,7 +109,7 @@ void main_scene::update( float )
                 for( int i = 0; i < sample_size; ++i )
                 {
                     CCASSERT( it_ != sample_.cend(), "" );
-                    data_[ i * 2 ] = static_cast<double>( std::get<data_acceleration>( *it_ ).x )
+                    data_[ i * 2 ] = static_cast<double>( it_->acceleration.x )
                         * ( 0.54 - 0.46 * std::cos( 2 * M_PI * i / ( sample_size * 2 ) ) ); // hamming window
                     data_[ i * 2 + 1 ] = 0; // imaginary part
                     ++it_;

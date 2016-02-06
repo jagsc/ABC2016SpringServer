@@ -15,6 +15,7 @@
 #define C2XA_COMMUNICATION_PARSE_HPP
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <c2xa/communication/data.hpp>
@@ -23,13 +24,14 @@ namespace c2xa
 {
     namespace communication
     {
-        static inline std::vector<data> parse( std::string const& string_ )
+        static inline std::vector<std::tuple<unsigned long long, data>> parse( std::string const& string_ )
         {
             auto begin_ = string_.cbegin();
             auto end_ = string_.cbegin();
             auto eof_ = string_.cend();
 
-            std::vector<data> list_;
+            std::vector<std::tuple<unsigned long long, data>> list_;
+            unsigned long long timestamp_;
             data data_;
 
             auto skip = [ & ]
@@ -45,14 +47,14 @@ namespace c2xa
                 auto result_ = std::sscanf
                     (
                         std::string{ begin_, end_ }.c_str(),
-                        "%ld,%f,%f,%f,%f,%f,%f",
-                        &std::get<data_timestamp>( data_ ),
-                        &std::get<data_acceleration>( data_ ).x,
-                        &std::get<data_acceleration>( data_ ).y,
-                        &std::get<data_acceleration>( data_ ).z,
-                        &std::get<data_gyro>( data_ ).x,
-                        &std::get<data_gyro>( data_ ).y,
-                        &std::get<data_gyro>( data_ ).z
+                        "%llu,%f,%f,%f,%f,%f,%f",
+                        &timestamp_,
+                        &data_.acceleration.x,
+                        &data_.acceleration.y,
+                        &data_.acceleration.z,
+                        &data_.gyro.x,
+                        &data_.gyro.y,
+                        &data_.gyro.z
                     );
                 if( result_ == EOF || result_ < 6 )
                 {
@@ -64,7 +66,7 @@ namespace c2xa
             while( skip() && scan() )
             {
                 //TODO: サンプルデータの位相を考慮する
-                list_.push_back( data_ );
+                list_.push_back( std::tie( timestamp_, data_ ) );
                 if( end_ == eof_ )
                 {
                     break;

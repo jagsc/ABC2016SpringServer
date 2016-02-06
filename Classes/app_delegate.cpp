@@ -8,7 +8,6 @@
 using namespace cocos2d;
 
 app_delegete::app_delegete() {
-
 }
 
 app_delegete::~app_delegete()

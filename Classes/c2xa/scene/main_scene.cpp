@@ -75,7 +75,31 @@ void main_scene::update( float )
             auto state_ = receive();
             while( state_ == bluetooth::connection_server::socket_state::success )
             {
-                for( auto&& i : communication::parse( buffer_ ) )
+                char data_[ sizeof( buffer_ ) * 2 + 1 ];
+                unsigned char tmp = 0;
+                unsigned char map_[] = { -1, '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', ',' };
+                int i;
+                for( i = 0; i < sizeof( buffer_ ); ++i )
+                {
+                    tmp = static_cast<unsigned char>( buffer_[ i ] ) >> 4;
+                    if( tmp == 0b00000000 )
+                    {
+                        data_[ i * 2 ] = '\0';
+                        break;
+                    }
+                    CCASSERT( tmp <= 13 && tmp >= 1, "" );
+                    data_[ i * 2 ] =  map_[ tmp ];
+                    tmp = static_cast<unsigned char>( buffer_[ i ] ) & 0b00001111;
+                    if( tmp == 0b00000000 )
+                    {
+                        data_[ i * 2 + 1 ] = '\0';
+                        break;
+                    }
+                    CCASSERT( tmp <= 13 && tmp >= 1, "" );
+                    data_[ i * 2 + 1 ] =  map_[ tmp ];
+                }
+
+                for( auto&& i : communication::parse( data_ ) )
                 {
                     sample_.push(
                         static_cast<std::chrono::nanoseconds>( std::get<0>( i ) ),

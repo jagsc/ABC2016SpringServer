@@ -58,20 +58,20 @@ namespace c2xa
             {
                 if( list_.size() == 0 )
                 {
-                    next_ = timestamp_;
+                    next_ = timestamp_ + std::chrono::nanoseconds{ sampling_period };
                     list_.push_back( std::tie( timestamp_, data_ ) );
                 }
                 else
                 {
-                    if( timestamp_ >= next_ )
+                    // データが次のサンプリングポイントを超えた
+                    int i = 0;
+                    while( timestamp_ >= next_ )
                     {
-                        cocos2d::log( "[sample log] %llu,%llu", timestamp_ , next_ );
-                        // データが次のサンプリングポイントを超えた
-                        auto right_ = next_ - timestamp_;
-                        auto left_  = timestamp_ - before_time_;
-                        // before_data_ + ( data_ - before_data_ ) * left_ / right_;
+                        auto right_ = timestamp_ - next_;
+                        auto left_  = next_ - before_time_;
+                        // before_data_ + ( data_ - before_data_ ) * left_ / ( left_ + right_ );
                         // ↓
-                        // ( data_ * left_ + before_data_ * ( right_ - left_ ) ) / r;
+                        // ( data_ * left_ + before_data_ * right_ ) / ( left_ + right_ )
 
                         list_.push_back( std::tie( next_, func_( static_cast<unsigned>( left_.count() ), static_cast<unsigned>( right_.count() ), before_data_, data_ ) ) );
 
@@ -80,8 +80,10 @@ namespace c2xa
                             list_.pop_front(); // サンプル数を超えたら破棄
                         }
 
-                        next_ = timestamp_ + std::chrono::nanoseconds{ sampling_period };
+                        next_ += std::chrono::nanoseconds{ sampling_period };
+                        ++i;
                     }
+                    cocos2d::log( "[sample] %d sampling point was skiped", i );
                 }
                 before_time_ = timestamp_;
                 before_data_ = data_;

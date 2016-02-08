@@ -53,9 +53,6 @@
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\scene\main_scene.hpp">
-      <Filter>src\c2xa\scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\app_delegate.hpp">
       <Filter>src</Filter>
     </ClInclude>
@@ -64,9 +61,6 @@
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\math\fast_fourier_transform.hpp">
       <Filter>src\c2xa\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\sample.hpp">
-      <Filter>src\c2xa</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\parse.hpp">
       <Filter>src\c2xa\communication</Filter>
@@ -91,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <Filter>src\c2xa\communication</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\math\sample.hpp">
+      <Filter>src\c2xa\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\main_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

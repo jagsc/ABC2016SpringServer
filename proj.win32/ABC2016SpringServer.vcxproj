@@ -183,11 +183,11 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       </SubType>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\math\fast_fourier_transform.hpp" />
-    <ClInclude Include="..\Classes\c2xa\optional.hpp">
+    <ClInclude Include="..\Classes\c2xa\math\sample.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\sample.hpp">
+    <ClInclude Include="..\Classes\c2xa\optional.hpp">
       <SubType>
       </SubType>
     </ClInclude>

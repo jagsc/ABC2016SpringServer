@@ -1,7 +1,6 @@
 ﻿
 #include <app_delegate.hpp>
-#include <c2xa/scene/main_scene.hpp>
-//#include <c2xa/scene/title_scene.hpp>
+#include <c2xa/scene/title_scene.hpp>
 #include <c2xa/config.hpp>
 //#include <c2xa/utility.hpp>
 
@@ -60,7 +59,7 @@ bool app_delegete::applicationDidFinishLaunching() {
     //c2xa::lua::initialize_state( c2xa::lua::get_state() );
 
     // create a scene. it's an autorelease object
-    auto scene = c2xa::scene::main_scene::create();
+    auto scene = c2xa::scene::title_scene::create();
 
     // run
     director->runWithScene(scene);

@@ -1,10 +1,10 @@
 ﻿
 #include <c2xa/exception.hpp>
-#include <c2xa/communication/bluetooth_server.hpp>
+#include <c2xa/communication/bluetooth/server.hpp>
 
 using namespace c2xa::bluetooth;
 
-listen_server::listen_server()
+listener::listener()
 {
     info_ = {};
     address_ = {};
@@ -59,12 +59,12 @@ listen_server::listen_server()
     change_io_mode( io_mode::non_blocking, listen_socket_ );
 }
 
-listen_server::~listen_server()
+listener::~listener()
 {
     ::closesocket( listen_socket_ );
 }
 
-c2xa::optional<SOCKET> listen_server::accept()
+c2xa::optional<std::unique_ptr<connection>> listener::accept()
 {
     SOCKADDR_BTH client_address_ = {};
     int address_size_ = sizeof( client_address_ );
@@ -81,20 +81,40 @@ c2xa::optional<SOCKET> listen_server::accept()
             C2XA_THROW( bluetooth_disconnect_exception, "accept error" );
         }
     }
-    return SOCKET{ tmp_ };
+    return std::make_unique<connection>( tmp_, client_address_ );
 }
 
-connection_server::connection_server( SOCKET socket_ )
+connection::connection( SOCKET socket_, SOCKADDR_BTH c )
     : socket_{ socket_ }
+    , client_( c )
 {
 }
 
-connection_server::~connection_server()
+connection::connection( connection && a )
 {
-    ::closesocket( socket_ );
+    socket_ = a.socket_;
+    client_ = a.client_;
+    a.socket_ = 0;
+    a.client_ = {};
 }
 
-connection_server::socket_state connection_server::receive( char *buffer_, int buffer_size_, int flag_ )
+void connection::operator=( connection && a )
+{
+    socket_ = a.socket_;
+    client_ = a.client_;
+    a.socket_ = 0;
+    a.client_ = {};
+}
+
+connection::~connection()
+{
+    if( socket_ != 0 )
+    {
+        ::closesocket( socket_ );
+    }
+}
+
+connection::socket_state connection::receive( char *buffer_, int buffer_size_, int flag_ )
 {
     int return_ = ::recv( socket_, buffer_, buffer_size_, flag_ );
     if( return_ > 0 )
@@ -114,7 +134,7 @@ connection_server::socket_state connection_server::receive( char *buffer_, int b
     }
 }
 
-int connection_server::send( char *buf, int bufsize, int Flag )
+int connection::send( char *buf, int bufsize, int Flag )
 {
     int bts_ret;
     bts_ret = ::send( socket_, buf, bufsize, Flag );

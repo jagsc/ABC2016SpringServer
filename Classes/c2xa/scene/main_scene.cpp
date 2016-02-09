@@ -60,7 +60,7 @@ void main_scene::update( float )
         auto is_accept_ = listen_server_.accept();
         if( is_accept_ )
         {
-            connection_server_.reset( new bluetooth::connection_server( *is_accept_ ) );
+            connection_server_ = std::move( *is_accept_ );
         }
     }
     else
@@ -73,7 +73,7 @@ void main_scene::update( float )
         try
         {
             auto state_ = receive();
-            while( state_ == bluetooth::connection_server::socket_state::success )
+            while( state_ == bluetooth::connection::socket_state::success )
             {
                 char data_[ sizeof( buffer_ ) * 2 + 1 ];
                 unsigned char tmp = 0;

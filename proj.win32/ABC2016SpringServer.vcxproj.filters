@@ -48,6 +48,18 @@
     <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
       <Filter>src\c2xa\communication</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\title_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\battle_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\demo_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\result_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -90,6 +102,18 @@
       <Filter>src\c2xa\math</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\scene\main_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\title_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\battle_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\demo_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\result_scene.hpp">
       <Filter>src\c2xa\scene</Filter>
     </ClInclude>
   </ItemGroup>

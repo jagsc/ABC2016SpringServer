@@ -151,7 +151,23 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       </SubType>
     </ClCompile>
     <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp" />
+    <ClCompile Include="..\Classes\c2xa\scene\battle_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\demo_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\scene\main_scene.cpp" />
+    <ClCompile Include="..\Classes\c2xa\scene\result_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\title_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -191,7 +207,23 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\battle_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\demo_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\scene\main_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\result_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\title_scene.hpp">
       <SubType>
       </SubType>
     </ClInclude>

@@ -60,7 +60,7 @@ void title_scene::update( float )
         auto accepted_ = listener_->accept();
         if( accepted_ )
         {
-            [ this, text_1p, text_2p, &accepted_ ]
+            do
             {
                 if( !connection_1p )
                 {
@@ -70,14 +70,14 @@ void title_scene::update( float )
                         connection_1p = std::move( *accepted_ );
                         address_1p = connection_1p->get_client_address();
                         text_1p->setString( "1P: first connecting" );
-                        return;
+                        break;
                     }
                     else if( address_1p == ( *accepted_ )->get_client_address() )
                     {
                         // 1p 再接続
                         connection_1p = std::move( *accepted_ );
                         text_1p->setString( "1P: re-connecting" );
-                        return;
+                        break;
                     }
                 }
                 if( !connection_2p )
@@ -88,17 +88,18 @@ void title_scene::update( float )
                         connection_2p = std::move( *accepted_ );
                         address_2p = connection_2p->get_client_address();
                         text_2p->setString( "2P: first connecting" );
-                        return;
+                        break;
                     }
                     else if( address_2p == ( *accepted_ )->get_client_address() )
                     {
                         // 2p 再接続
                         connection_2p = std::move( *accepted_ );
                         text_2p->setString( "2P: re-connecting" );
-                        return;
+                        break;
                     }
                 }
-            }();
+            }
+            while( false );
             if( connection_1p && connection_2p )
             {
                 listener_.reset();

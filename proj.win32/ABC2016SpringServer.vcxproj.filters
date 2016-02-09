@@ -28,6 +28,9 @@
     <Filter Include="src\c2xa\debug">
       <UniqueIdentifier>{a5aff4e1-bb56-4522-b076-6b5982bb4512}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\c2xa\communication\bluetooth">
+      <UniqueIdentifier>{7b7de0ce-a453-4183-acf5-8345c422b13a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,9 +44,6 @@
     </ClCompile>
     <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp">
       <Filter>src\c2xa\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\c2xa\communication\bluetooth_server.cpp">
-      <Filter>src\c2xa\communication</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
       <Filter>src\c2xa\communication</Filter>
@@ -59,6 +59,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\c2xa\scene\result_scene.cpp">
       <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\communication\bluetooth\server.cpp">
+      <Filter>src\c2xa\communication\bluetooth</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +95,6 @@
     <ClInclude Include="..\Classes\c2xa\optional.hpp">
       <Filter>src\c2xa</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\communication\bluetooth_server.hpp">
-      <Filter>src\c2xa\communication</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <Filter>src\c2xa\communication</Filter>
     </ClInclude>
@@ -115,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\scene\result_scene.hpp">
       <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\bluetooth\server.hpp">
+      <Filter>src\c2xa\communication\bluetooth</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

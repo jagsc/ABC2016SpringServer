@@ -25,20 +25,49 @@ bool title_scene::init()
     setName( "title_scene" );
     scheduleUpdate();
 
-    Vec2 relative_original_{ 100, app_height - 100 };
+    Vec2 relative_original_{ app_width - 600, app_height - 500 };
 
-    addChild( LayerColor::create( Color4B::WHITE, app_width, app_height ), 1 );
+    auto bg_ = Sprite::create( "img/title_bg.png" );
+    bg_->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
+    addChild( bg_, 1 );
 
-    auto text_1p_ = Label::createWithSystemFont( "1P: disconnect", "Arial", 32 );
-    text_1p_->setPosition( relative_original_ );
-    text_1p_->setColor( Color3B{ 128, 128, 128 } );
+    auto logo_ = Sprite::create( "img/logo.png" );
+    logo_->setAnchorPoint( Vec2::ANCHOR_TOP_RIGHT );
+    logo_->setPosition( Vec2{ app_width - 100, app_height - 100 } );
+    addChild( logo_, 10 );
+
+    auto particle_ = ParticleSystemQuad::create( "particle/fire.plist" );
+    particle_->setPosition( Vec2{ app_width / 2, 0 } );
+    particle_->resetSystem();
+    addChild( particle_, 2 );
+
+    auto bg_add_ = Sprite::create( "img/title_add.png" );
+    bg_add_->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
+    bg_add_->setBlendFunc( { GL_SRC_ALPHA, GL_ONE } );
+    bg_add_->setOpacity( 100 );
+    addChild( bg_add_, 3 );
+
+    auto text_condition_ = Label::createWithSystemFont( "waiting for players...", "Arial", 32 );
+    text_condition_->setPosition( relative_original_ );
+    text_condition_->setColor( Color3B{ 255, 255, 99 } );
+    text_condition_->setOpacity( 0 );
+    text_condition_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+    text_condition_->setName( "condition_text" );
+    addChild( text_condition_, 10 );
+
+    auto blink_ = RepeatForever::create( Sequence::create( FadeTo::create( 0.3f, 255 ), FadeTo::create( 1.2f, 0 ), nullptr ) );
+    text_condition_->runAction( blink_ );
+
+    auto text_1p_ = Label::createWithSystemFont( "1P:", "Arial", 32 );
+    text_1p_->setPosition( relative_original_ + Vec2{ 20, -140 } );
+    text_1p_->setColor( Color3B{ 255, 255, 99 } );
     text_1p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
     text_1p_->setName( "1p_text" );
     addChild( text_1p_, 10 );
 
-    auto text_2p_ = Label::createWithSystemFont( "2P: disconnect", "Arial", 32 );
-    text_2p_->setPosition( relative_original_ + Vec2{ 0, -40 } );
-    text_2p_->setColor( Color3B{ 128, 128, 128 } );
+    auto text_2p_ = Label::createWithSystemFont( "2P:", "Arial", 32 );
+    text_2p_->setPosition( relative_original_ + Vec2{ 20, -180 } );
+    text_2p_->setColor( Color3B{ 255, 255, 99 } );
     text_2p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
     text_2p_->setName( "2p_text" );
     addChild( text_2p_, 11 );
@@ -69,14 +98,14 @@ void title_scene::update( float )
                         // 初接続
                         connection_1p = std::move( *accepted_ );
                         address_1p = connection_1p->get_client_address();
-                        text_1p->setString( "1P: first connecting" );
+                        text_1p->setString( "1P: connect" );
                         break;
                     }
                     else if( address_1p == ( *accepted_ )->get_client_address() )
                     {
                         // 1p 再接続
                         connection_1p = std::move( *accepted_ );
-                        text_1p->setString( "1P: re-connecting" );
+                        text_1p->setString( "1P: connect" );
                         break;
                     }
                 }
@@ -87,14 +116,14 @@ void title_scene::update( float )
                         // 初接続
                         connection_2p = std::move( *accepted_ );
                         address_2p = connection_2p->get_client_address();
-                        text_2p->setString( "2P: first connecting" );
+                        text_2p->setString( "2P: connect" );
                         break;
                     }
                     else if( address_2p == ( *accepted_ )->get_client_address() )
                     {
                         // 2p 再接続
                         connection_2p = std::move( *accepted_ );
-                        text_2p->setString( "2P: re-connecting" );
+                        text_2p->setString( "2P: connect" );
                         break;
                     }
                 }

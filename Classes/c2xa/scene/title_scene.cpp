@@ -117,35 +117,36 @@ bool title_scene::init()
         auto text_2p = static_cast<cocos2d::Label*>( getChildByName( "text_2p_condition" ) );
         switch( state_ )
         {
-        case connection_state::connect:
-        {
-            text_2p->setString( "2P: CONNECT" );
-            text_2p->setOpacity( 0 );
-            text_2p->runAction( FadeTo::create( 0.3f, 255 ) );
+            case connection_state::connect:
+            {
+                text_2p->setString( "2P: CONNECT" );
+                text_2p->setOpacity( 0 );
+                text_2p->runAction( FadeTo::create( 0.3f, 255 ) );
 
-            auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
-            particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-            particle_->setPosition( condition_2p_particle_ );
-            particle_->setAutoRemoveOnFinish( true );
-            addChild( particle_, 12 );
+                auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
+                particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+                particle_->setPosition( condition_2p_particle_ );
+                particle_->setAutoRemoveOnFinish( true );
+                addChild( particle_, 12 );
 
-            break;
-        }
-        case connection_state::disconnect:
-        {
-            text_2p->setString( "2P: DISCONNECT" );
-            break;
-        }
-        case connection_state::reconnect:
-        {
-            text_2p->setString( "2P: CONNECT" );
-            break;
-        }
+                break;
+            }
+            case connection_state::disconnect:
+            {
+                text_2p->setString( "2P: DISCONNECT" );
+                break;
+            }
+            case connection_state::reconnect:
+            {
+                text_2p->setString( "2P: CONNECT" );
+                break;
+            }
         }
     } );
     addChild( observer_2p );
 
     auto com_ = communication_node::create();
+    com_->setName( "com_node" );
     com_->get_subject_1p()->registry_observer( observer_1p );
     com_->get_subject_2p()->registry_observer( observer_2p );
     addChild( com_ );
@@ -155,5 +156,13 @@ bool title_scene::init()
 
 void title_scene::update( float )
 {
+    using namespace cocos2d;
 
+    auto com_node_ = static_cast<communication_node*>( getChildByName( "com_node" ) );
+    com_node_->receive_1p( []( auto buffer_ )
+    {
+    } );
+    com_node_->receive_2p( []( auto buffer_ )
+    {
+    } );
 }

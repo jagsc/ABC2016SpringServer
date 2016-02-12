@@ -9,7 +9,6 @@
 
 */
 
-#include <c2xa/exception.hpp>
 #include <c2xa/communication/node.hpp>
 
 using namespace c2xa;
@@ -83,57 +82,6 @@ void communication_node::update( float )
             {
                 listener_.reset();
             }
-        }
-    }
-
-    if( connection_1p )
-    {
-        auto receive = [ this ]()
-        {
-            std::memset( buffer_, '\0', sizeof( buffer_ ) );
-            return connection_1p->receive( buffer_, sizeof( buffer_ ), 0 );
-        };
-        try
-        {
-            auto state_ = receive();
-            while( state_ == bluetooth::connection::socket_state::success )
-            {
-                state_ = receive();
-            }
-        }
-        catch( bluetooth_disconnect_exception const& )
-        {
-            connection_1p.reset();
-            if( !listener_ )
-            {
-                listener_ = std::make_shared<bluetooth::listener>();
-            }
-            subject_1p.notify( connection_state::disconnect );
-        }
-    }
-    if( connection_2p )
-    {
-        auto receive = [ this ]
-        {
-            std::memset( buffer_, '\0', sizeof( buffer_ ) );
-            return connection_2p->receive( buffer_, sizeof( buffer_ ), 0 );
-        };
-        try
-        {
-            auto state_ = receive();
-            while( state_ == bluetooth::connection::socket_state::success )
-            {
-                state_ = receive();
-            }
-        }
-        catch( bluetooth_disconnect_exception const& )
-        {
-            connection_2p.reset();
-            if( !listener_ )
-            {
-                listener_ = std::make_shared<bluetooth::listener>();
-            }
-            subject_2p.notify( connection_state::disconnect );
         }
     }
 }

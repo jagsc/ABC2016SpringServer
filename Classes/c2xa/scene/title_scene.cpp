@@ -15,6 +15,15 @@
 
 using namespace c2xa::scene;
 
+namespace
+{
+    static const cocos2d::Vec2 message_text_{ c2xa::app_width - 470, c2xa::app_height - 580 };
+    static const cocos2d::Vec2 condition_1p_text_    { c2xa::app_width - 550, c2xa::app_height - 730 };
+    static const cocos2d::Vec2 condition_1p_particle_{ c2xa::app_width - 500, c2xa::app_height - 750 };
+    static const cocos2d::Vec2 condition_2p_text_    { c2xa::app_width - 550, c2xa::app_height - 770 };
+    static const cocos2d::Vec2 condition_2p_particle_{ c2xa::app_width - 500, c2xa::app_height - 790 };
+}
+
 bool title_scene::init()
 {
     using namespace cocos2d;
@@ -24,8 +33,6 @@ bool title_scene::init()
     }
     setName( "title_scene" );
     scheduleUpdate();
-
-    Vec2 relative_original_{ app_width - 600, app_height - 500 };
 
     auto bg_ = Sprite::create( "img/title_bg.png" );
     bg_->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
@@ -47,29 +54,28 @@ bool title_scene::init()
     bg_add_->setOpacity( 100 );
     addChild( bg_add_, 3 );
 
-    auto text_condition_ = Label::createWithSystemFont( "waiting for players...", "Arial", 32 );
-    text_condition_->setPosition( relative_original_ );
-    text_condition_->setColor( Color3B{ 255, 255, 99 } );
-    text_condition_->setOpacity( 0 );
-    text_condition_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-    text_condition_->setName( "condition_text" );
-    addChild( text_condition_, 10 );
+    auto text_message_ = Label::createWithTTF( "waiting for players...", "font/Stroke.ttf", 32 );
+    text_message_->setPosition( message_text_ );
+    text_message_->setColor( Color3B{ 255, 255, 99 } );
+    text_message_->setOpacity( 0 );
+    text_message_->setName( "text_message" );
+    addChild( text_message_, 10 );
 
     auto blink_ = RepeatForever::create( Sequence::create( FadeTo::create( 0.3f, 255 ), FadeTo::create( 1.2f, 0 ), nullptr ) );
-    text_condition_->runAction( blink_ );
+    text_message_->runAction( blink_ );
 
-    auto text_1p_ = Label::createWithSystemFont( "1P:", "Arial", 32 );
-    text_1p_->setPosition( relative_original_ + Vec2{ 20, -140 } );
-    text_1p_->setColor( Color3B{ 255, 255, 99 } );
+    auto text_1p_ = Label::createWithTTF( "", "font/Stroke.ttf", 32 );
+    text_1p_->setPosition( condition_1p_text_ + Vec2{ 7, 0 } );
+    text_1p_->setColor( Color3B{ 255, 230, 99 } );
     text_1p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-    text_1p_->setName( "1p_text" );
+    text_1p_->setName( "text_1p_condition" );
     addChild( text_1p_, 10 );
 
-    auto text_2p_ = Label::createWithSystemFont( "2P:", "Arial", 32 );
-    text_2p_->setPosition( relative_original_ + Vec2{ 20, -180 } );
-    text_2p_->setColor( Color3B{ 255, 255, 99 } );
+    auto text_2p_ = Label::createWithTTF( "", "font/Stroke.ttf", 32 );
+    text_2p_->setPosition( condition_2p_text_ );
+    text_2p_->setColor( Color3B{ 255, 230, 99 } );
     text_2p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-    text_2p_->setName( "2p_text" );
+    text_2p_->setName( "text_2p_condition" );
     addChild( text_2p_, 11 );
 
     listener_ = std::make_shared<bluetooth::listener>();
@@ -81,8 +87,11 @@ bool title_scene::init()
 
 void title_scene::update( float )
 {
-    auto text_1p = static_cast<cocos2d::Label*>( getChildByName( "1p_text" ) );
-    auto text_2p = static_cast<cocos2d::Label*>( getChildByName( "2p_text" ) );
+    using namespace cocos2d;
+
+    auto text_message_ = static_cast<cocos2d::Label*>( getChildByName( "text_message" ) );
+    auto text_1p = static_cast<cocos2d::Label*>( getChildByName( "text_1p_condition" ) );
+    auto text_2p = static_cast<cocos2d::Label*>( getChildByName( "text_2p_condition" ) );
 
     if( listener_ )
     {
@@ -98,14 +107,23 @@ void title_scene::update( float )
                         // 初接続
                         connection_1p = std::move( *accepted_ );
                         address_1p = connection_1p->get_client_address();
-                        text_1p->setString( "1P: connect" );
+                        text_1p->setString( "1P: CONNECT" );
+                        text_1p->setOpacity( 0 );
+                        text_1p->runAction( FadeTo::create( 0.3f, 255 ) );
+
+                        auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
+                        particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+                        particle_->setPosition( condition_1p_particle_ );
+                        particle_->setAutoRemoveOnFinish( true );
+                        addChild( particle_, 12 );
+
                         break;
                     }
                     else if( address_1p == ( *accepted_ )->get_client_address() )
                     {
                         // 1p 再接続
                         connection_1p = std::move( *accepted_ );
-                        text_1p->setString( "1P: connect" );
+                        text_1p->setString( "1P: CONNECT" );
                         break;
                     }
                 }
@@ -116,14 +134,21 @@ void title_scene::update( float )
                         // 初接続
                         connection_2p = std::move( *accepted_ );
                         address_2p = connection_2p->get_client_address();
-                        text_2p->setString( "2P: connect" );
+                        text_2p->setString( "2P: CONNECT" );
+
+                        auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
+                        particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+                        particle_->setPosition( condition_2p_particle_ );
+                        particle_->setAutoRemoveOnFinish( true );
+                        addChild( particle_, 12 );
+
                         break;
                     }
                     else if( address_2p == ( *accepted_ )->get_client_address() )
                     {
                         // 2p 再接続
                         connection_2p = std::move( *accepted_ );
-                        text_2p->setString( "2P: connect" );
+                        text_2p->setString( "2P: CONNECT" );
                         break;
                     }
                 }
@@ -154,7 +179,7 @@ void title_scene::update( float )
         catch( bluetooth_disconnect_exception const& e )
         {
             connection_1p.reset();
-            text_1p->setString( "1P: dissconnect" );
+            text_1p->setString( "1P: DISCONNECT" );
             if( !listener_ )
             {
                 listener_ = std::make_shared<bluetooth::listener>();
@@ -179,7 +204,7 @@ void title_scene::update( float )
         catch( bluetooth_disconnect_exception const& e )
         {
             connection_2p.reset();
-            text_2p->setString( "2P: dissconnect" );
+            text_2p->setString( "2P: DISCONNECT" );
             if( !listener_ )
             {
                 listener_ = std::make_shared<bluetooth::listener>();

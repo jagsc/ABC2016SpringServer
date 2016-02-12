@@ -55,12 +55,19 @@ listener::listener()
         C2XA_THROW( bluetooth_exception, "WSASetService error." );
     }
 
-    ::listen( listen_socket_, 0 );
+    if( -1 == ::listen( listen_socket_, 0 ) )
+    {
+        C2XA_THROW( bluetooth_exception, "listen error." );
+    }
     change_io_mode( io_mode::non_blocking, listen_socket_ );
 }
 
 listener::~listener()
 {
+    if( 0 != ::WSASetService( &quset_, RNRSERVICE_DELETE, 0 ) )
+    {
+        C2XA_THROW( bluetooth_exception, "WSASetService error." );
+    }
     ::closesocket( listen_socket_ );
 }
 

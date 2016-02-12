@@ -146,6 +146,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\app_delegate.cpp" />
     <ClCompile Include="..\Classes\c2xa\communication\bluetooth\server.cpp" />
+    <ClCompile Include="..\Classes\c2xa\communication\node.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
       <SubType>
       </SubType>
@@ -173,6 +177,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\app_delegate.hpp" />
     <ClInclude Include="..\Classes\c2xa\communication\bluetooth\server.hpp" />
+    <ClInclude Include="..\Classes\c2xa\communication\node.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <SubType>
       </SubType>
@@ -203,6 +211,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\observer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\optional.hpp">
       <SubType>
       </SubType>
@@ -224,6 +236,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       </SubType>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\scene\title_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\utility.hpp">
       <SubType>
       </SubType>
     </ClInclude>

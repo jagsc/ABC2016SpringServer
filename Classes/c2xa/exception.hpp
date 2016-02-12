@@ -8,16 +8,17 @@
 
 namespace c2xa
 {
+#ifdef _DEBUG
     struct error
     {
         std::string file;
-        decltype(__LINE__) line;
+        decltype( __LINE__ ) line;
         std::string function;
         std::string message;
-        
+
         error( error const& e )
             : file{ e.file }
-            , line{ e.line  }
+            , line{ e.line }
             , function{ e.function }
             , message{ e.message }
         {
@@ -31,7 +32,6 @@ namespace c2xa
         {
         }
     };
-
     struct exception
         : virtual std::exception
     {
@@ -42,7 +42,6 @@ namespace c2xa
         {
         }
     };
-
 #define _C2XA_EXCEPTION( name )\
     struct name##_exception\
         : public exception\
@@ -55,7 +54,18 @@ namespace c2xa
             : exception{ e }\
         {\
         }\
-    }
+    };
+#else
+    struct exception
+        : virtual std::exception
+    {
+    };
+#define _C2XA_EXCEPTION( name )\
+    struct name##_exception\
+        : public exception\
+    {\
+    };
+#endif
 
     _C2XA_EXCEPTION( bluetooth );
     _C2XA_EXCEPTION( bluetooth_disconnect );
@@ -65,7 +75,7 @@ namespace c2xa
 #ifdef _DEBUG
 #define C2XA_THROW( exc, msg ) throw exc{ error{ __FILE__, __LINE__, __FUNCTION__, msg } }
 #else
-#define C2XA_THROW( exc, msg ) throw
+#define C2XA_THROW( exc, msg ) throw exc{}
 #endif
 
 #endif//C2XA_EXCEPTION_HPP

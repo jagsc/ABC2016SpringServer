@@ -63,6 +63,9 @@
     <ClCompile Include="..\Classes\c2xa\communication\bluetooth\server.cpp">
       <Filter>src\c2xa\communication\bluetooth</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\communication\node.cpp">
+      <Filter>src\c2xa\communication</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -118,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\bluetooth\server.hpp">
       <Filter>src\c2xa\communication\bluetooth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\node.hpp">
+      <Filter>src\c2xa\communication</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\utility.hpp">
+      <Filter>src\c2xa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\observer.hpp">
+      <Filter>src\c2xa</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

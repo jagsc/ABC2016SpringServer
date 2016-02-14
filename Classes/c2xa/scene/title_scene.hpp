@@ -15,8 +15,6 @@
 
 #include <cocos2d.h>
 
-#include <c2xa/communication/bluetooth/server.hpp>
-
 namespace c2xa
 {
     namespace scene
@@ -24,14 +22,6 @@ namespace c2xa
         class title_scene
             : public cocos2d::Scene
         {
-        private:
-            char buffer_[ 2048 ];
-            std::shared_ptr<bluetooth::listener> listener_;
-            std::shared_ptr<bluetooth::connection> connection_1p;
-            std::shared_ptr<bluetooth::connection> connection_2p;
-            BTH_ADDR address_1p;
-            BTH_ADDR address_2p;
-
         public:
             CREATE_FUNC( title_scene );
             virtual bool init() override;

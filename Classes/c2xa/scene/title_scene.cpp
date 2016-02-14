@@ -12,6 +12,7 @@
 #include <c2xa/config.hpp>
 #include <c2xa/exception.hpp>
 #include <c2xa/scene/title_scene.hpp>
+#include <c2xa/communication/node.hpp>
 
 using namespace c2xa::scene;
 
@@ -78,9 +79,77 @@ bool title_scene::init()
     text_2p_->setName( "text_2p_condition" );
     addChild( text_2p_, 11 );
 
-    listener_ = std::make_shared<bluetooth::listener>();
-    address_1p = 0;
-    address_2p = 0;
+    auto observer_1p = observer<connection_state>::create( [ this ]( connection_state state_ )
+    {
+        auto text_1p = static_cast<cocos2d::Label*>( getChildByName( "text_1p_condition" ) );
+        switch( state_ )
+        {
+        case connection_state::connect:
+        {
+            text_1p->setString( "1P: CONNECT" );
+            text_1p->setOpacity( 0 );
+            text_1p->runAction( FadeTo::create( 0.3f, 255 ) );
+
+            auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
+            particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+            particle_->setPosition( condition_1p_particle_ );
+            particle_->setAutoRemoveOnFinish( true );
+            addChild( particle_, 12 );
+
+            break;
+        }
+        case connection_state::disconnect:
+        {
+            text_1p->setString( "1P: DISCONNECT" );
+            break;
+        }
+        case connection_state::reconnect:
+        {
+            text_1p->setString( "1P: CONNECT" );
+            break;
+        }
+        }
+    } );
+    addChild( observer_1p );
+
+    auto observer_2p = observer<connection_state>::create( [ this ]( connection_state state_ )
+    {
+        auto text_2p = static_cast<cocos2d::Label*>( getChildByName( "text_2p_condition" ) );
+        switch( state_ )
+        {
+            case connection_state::connect:
+            {
+                text_2p->setString( "2P: CONNECT" );
+                text_2p->setOpacity( 0 );
+                text_2p->runAction( FadeTo::create( 0.3f, 255 ) );
+
+                auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
+                particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+                particle_->setPosition( condition_2p_particle_ );
+                particle_->setAutoRemoveOnFinish( true );
+                addChild( particle_, 12 );
+
+                break;
+            }
+            case connection_state::disconnect:
+            {
+                text_2p->setString( "2P: DISCONNECT" );
+                break;
+            }
+            case connection_state::reconnect:
+            {
+                text_2p->setString( "2P: CONNECT" );
+                break;
+            }
+        }
+    } );
+    addChild( observer_2p );
+
+    auto com_ = communication_node::create();
+    com_->setName( "com_node" );
+    com_->get_subject_1p()->registry_observer( observer_1p );
+    com_->get_subject_2p()->registry_observer( observer_2p );
+    addChild( com_ );
 
     return true;
 }
@@ -89,126 +158,11 @@ void title_scene::update( float )
 {
     using namespace cocos2d;
 
-    auto text_message_ = static_cast<cocos2d::Label*>( getChildByName( "text_message" ) );
-    auto text_1p = static_cast<cocos2d::Label*>( getChildByName( "text_1p_condition" ) );
-    auto text_2p = static_cast<cocos2d::Label*>( getChildByName( "text_2p_condition" ) );
-
-    if( listener_ )
+    auto com_node_ = static_cast<communication_node*>( getChildByName( "com_node" ) );
+    com_node_->receive_1p( []( auto buffer_ )
     {
-        auto accepted_ = listener_->accept();
-        if( accepted_ )
-        {
-            do
-            {
-                if( !connection_1p )
-                {
-                    if( address_1p == 0 )
-                    {
-                        // 初接続
-                        connection_1p = std::move( *accepted_ );
-                        address_1p = connection_1p->get_client_address();
-                        text_1p->setString( "1P: CONNECT" );
-                        text_1p->setOpacity( 0 );
-                        text_1p->runAction( FadeTo::create( 0.3f, 255 ) );
-
-                        auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
-                        particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-                        particle_->setPosition( condition_1p_particle_ );
-                        particle_->setAutoRemoveOnFinish( true );
-                        addChild( particle_, 12 );
-
-                        break;
-                    }
-                    else if( address_1p == ( *accepted_ )->get_client_address() )
-                    {
-                        // 1p 再接続
-                        connection_1p = std::move( *accepted_ );
-                        text_1p->setString( "1P: CONNECT" );
-                        break;
-                    }
-                }
-                if( !connection_2p )
-                {
-                    if( address_2p == 0 )
-                    {
-                        // 初接続
-                        connection_2p = std::move( *accepted_ );
-                        address_2p = connection_2p->get_client_address();
-                        text_2p->setString( "2P: CONNECT" );
-
-                        auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
-                        particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-                        particle_->setPosition( condition_2p_particle_ );
-                        particle_->setAutoRemoveOnFinish( true );
-                        addChild( particle_, 12 );
-
-                        break;
-                    }
-                    else if( address_2p == ( *accepted_ )->get_client_address() )
-                    {
-                        // 2p 再接続
-                        connection_2p = std::move( *accepted_ );
-                        text_2p->setString( "2P: CONNECT" );
-                        break;
-                    }
-                }
-            }
-            while( false );
-            if( connection_1p && connection_2p )
-            {
-                listener_.reset();
-            }
-        }
-    }
-
-    if( connection_1p )
+    } );
+    com_node_->receive_2p( []( auto buffer_ )
     {
-        auto receive = [ this ]()
-        {
-            std::memset( buffer_, '\0', sizeof( buffer_ ) );
-            return connection_1p->receive( buffer_, sizeof( buffer_ ), 0 );
-        };
-        try
-        {
-            auto state_ = receive();
-            while( state_ == bluetooth::connection::socket_state::success )
-            {
-                state_ = receive();
-            }
-        }
-        catch( bluetooth_disconnect_exception const& e )
-        {
-            connection_1p.reset();
-            text_1p->setString( "1P: DISCONNECT" );
-            if( !listener_ )
-            {
-                listener_ = std::make_shared<bluetooth::listener>();
-            }
-        }
-    }
-    if( connection_2p )
-    {
-        auto receive = [ this ]
-        {
-            std::memset( buffer_, '\0', sizeof( buffer_ ) );
-            return connection_2p->receive( buffer_, sizeof( buffer_ ), 0 );
-        };
-        try
-        {
-            auto state_ = receive();
-            while( state_ == bluetooth::connection::socket_state::success )
-            {
-                state_ = receive();
-            }
-        }
-        catch( bluetooth_disconnect_exception const& e )
-        {
-            connection_2p.reset();
-            text_2p->setString( "2P: DISCONNECT" );
-            if( !listener_ )
-            {
-                listener_ = std::make_shared<bluetooth::listener>();
-            }
-        }
-    }
+    } );
 }

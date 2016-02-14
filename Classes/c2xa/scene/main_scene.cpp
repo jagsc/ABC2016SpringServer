@@ -20,7 +20,6 @@ try
 }
 catch( c2xa::bluetooth_exception& e )
 {
-    cocos2d::log( e.error_.message.c_str() );
     throw e;
 }
 

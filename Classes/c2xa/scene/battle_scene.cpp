@@ -58,13 +58,8 @@ namespace
 }
 
 battle_scene::battle_scene()
-try
     : fft_{ sample::sampling_number }
 {
-}
-catch( c2xa::bluetooth_exception& e )
-{
-    throw e;
 }
 
 bool battle_scene::init( communication_node* com_node_ )

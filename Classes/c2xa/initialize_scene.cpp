@@ -18,8 +18,18 @@
 
 cocos2d::Scene* c2xa::initialize_scene()
 {
-    auto com_node_ = com_node::create();
-    com_node_->setName( "com_node" );
-    auto scene_ = c2xa::scene::title_scene::create( com_node_ );
+    cocos2d::Scene* scene_;
+    try
+    {
+        auto com_node_ = com_node::create();
+        com_node_->setName( "com_node" );
+        scene_ = c2xa::scene::title_scene::create( com_node_ );
+    }
+    catch( c2xa::bluetooth_exception& e )
+    {
+        cocos2d::MessageBox( u8"Bluetooth initialization failed.", "Error" );
+        cocos2d::Director::getInstance()->end();
+        return nullptr;
+    }
     return scene_;
 }

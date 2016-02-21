@@ -134,7 +134,19 @@ namespace c2xa
 
         data operator+( data const& a ) const
         {
-            return { acceleration + a.acceleration, gyro + a.gyro };
+            return{ acceleration + a.acceleration, gyro + a.gyro };
+        }
+        void operator+=( data const& a )
+        {
+            acceleration.x += a.acceleration.x;
+            acceleration.y += a.acceleration.y;
+            acceleration.z += a.acceleration.z;
+        }
+        void operator-=( data const& a )
+        {
+            acceleration.x -= a.acceleration.x;
+            acceleration.y -= a.acceleration.y;
+            acceleration.z -= a.acceleration.z;
         }
         template< typename Type >
         data operator*( Type a ) const

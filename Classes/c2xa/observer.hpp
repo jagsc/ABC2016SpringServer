@@ -97,7 +97,7 @@ namespace c2xa
         }
         void remove_observer( observer_type* o, bool pre_separate_ = false ) override
         {
-            observers_.erase( std::remove_if( observers_.begin(), observers_.end(),
+            auto i = std::remove_if( observers_.begin(), observers_.end(),
                 [ o, pre_separate_ ]( observer_type* i )
             {
                 if( o == i )
@@ -109,7 +109,8 @@ namespace c2xa
                     return true;
                 }
                 return false;
-            } ), observers_.end() );
+            } );
+            observers_.erase( i, observers_.end() );
         }
         void clear()
         {

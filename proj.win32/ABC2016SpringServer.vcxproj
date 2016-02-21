@@ -154,6 +154,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\initialize_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp" />
     <ClCompile Include="..\Classes\c2xa\scene\battle_scene.cpp">
       <SubType>
@@ -203,6 +207,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       </SubType>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\experimental\data_analyzer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\initialize_scene.hpp">
       <SubType>
       </SubType>
     </ClInclude>

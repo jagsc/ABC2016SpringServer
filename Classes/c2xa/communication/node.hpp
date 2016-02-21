@@ -12,6 +12,8 @@
 #ifndef C2XA_COMMUNICATION_NODE_HPP
 #define C2XA_COMMUNICATION_NODE_HPP
 
+#include <array>
+
 #include <cocos2d.h>
 
 #include <c2xa/exception.hpp>
@@ -30,10 +32,13 @@ namespace c2xa
     class communication_node
         : public cocos2d::Node
     {
-    private:
+    public:
+        static constexpr size_t buffer_size = 2048;
         using subject = subject<connection_state>;
+        using buffer_type = std::array< char, buffer_size >;
+
     private:
-        char buffer_[ 2048 ];
+        buffer_type buffer_;
         std::shared_ptr<bluetooth::listener> listener_;
         std::shared_ptr<bluetooth::connection> connection_1p;
         std::shared_ptr<bluetooth::connection> connection_2p;
@@ -54,6 +59,34 @@ namespace c2xa
         {
             return &subject_2p;
         }
+        void send_1p()
+        {
+            if( connection_1p )
+            {
+                connection_1p->send( "\0", 1, 0 );
+            }
+        }
+        void send_1p( char* buf_, size_t n )
+        {
+            if( connection_1p )
+            {
+                connection_1p->send( buf_, n, 0 );
+            }
+        }
+        void send_2p()
+        {
+            if( connection_2p )
+            {
+                connection_2p->send( "\0", 1, 0 );
+            }
+        }
+        void send_2p( char* buf_, size_t n )
+        {
+            if( connection_2p )
+            {
+                connection_2p->send( buf_, n, 0 );
+            }
+        }
         template< typename FUNC >
         void receive_1p( FUNC func_ )
         {
@@ -63,13 +96,20 @@ namespace c2xa
                 {
                     while( true )
                     {
-                        std::memset( buffer_, '\0', sizeof( buffer_ ) );
-                        auto state_ = connection_1p->receive( buffer_, sizeof( buffer_ ), 0 );
+                        std::memset( buffer_.data(), '\0', buffer_.size() );
+                        auto state_ = connection_1p->receive( buffer_.data(), buffer_.size(), 0 );
                         if( state_ != bluetooth::connection::socket_state::success )
                         {
                             break;
                         }
-                        func_( buffer_ );
+                        if( buffer_[ 0 ] == 'o' && buffer_[ 1 ] == 'k' )
+                        {
+                            cocos2d::log("返信でしたンゴ");
+                        }
+                        else
+                        {
+                            func_( this, buffer_ );
+                        }
                     }
                 }
                 catch( bluetooth_disconnect_exception const& )
@@ -92,13 +132,13 @@ namespace c2xa
                 {
                     while( true )
                     {
-                        std::memset( buffer_, '\0', sizeof( buffer_ ) );
-                        auto state_ = connection_2p->receive( buffer_, sizeof( buffer_ ), 0 );
+                        std::memset( buffer_.data(), '\0', buffer_.size() );
+                        auto state_ = connection_2p->receive( buffer_.data(), buffer_.size(), 0 );
                         if( state_ != bluetooth::connection::socket_state::success )
                         {
                             break;
                         }
-                        func_( buffer_ );
+                        func_( this, buffer_ );
                     }
                 }
                 catch( bluetooth_disconnect_exception const& )

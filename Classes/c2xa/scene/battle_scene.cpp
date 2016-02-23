@@ -12,6 +12,7 @@
 #include <c2xa/scene/battle_scene.hpp>
 #include <c2xa/config.hpp>
 #include <c2xa/exception.hpp>
+#include <c2xa/player.hpp>
 #include <c2xa/communication/node.hpp>
 #include <c2xa/communication/parse.hpp>
 
@@ -20,128 +21,15 @@ using namespace c2xa::scene;
 
 namespace
 {
-    template< size_t sampling_number_ >
-    using buffer_for_fft = std::array<double, sampling_number_ * 2>;
-
-    template< typename SAMPLE, typename BUFFER, typename FUNC >
-    void apply_fft(
-        SAMPLE&& sample_,
-        BUFFER&& buffer_,
-        fft& fft_,
-        FUNC func )
-    {
-        using sample_type = typename std::remove_reference<SAMPLE>::type;
-
-        if( sample_.size() == sample_type::sampling_number )
-        {
-            auto it_ = sample_.cbegin();
-
-            for( int i = 0; i < sample_type::sampling_number; ++i )
-            {
-                CCASSERT( it_ != sample_.cend(), "" );
-                buffer_[ i * 2 ] = static_cast<double>( func( std::get<1>( *it_ ) ) )
-                    * ( 0.54 - 0.46 * std::cos( 2 * M_PI * i / ( sample_type::sampling_number * 2 ) ) ); // hamming window
-                buffer_[ i * 2 + 1 ] = 0; // imaginary part
-                ++it_;
-            }
-
-            fft_.cdft( 1, buffer_.data() ); // FFT 結果はdata_に代入される
-        }
-    }
-    template< typename SAMPLE, typename SPECTRUMS >
-    void update_spectrums(
-        SAMPLE&& sample_,
-        SPECTRUMS&& spectrums_,
-        fft& fft_ )
-    {
-        using sample_type = typename std::remove_reference<SAMPLE>::type;
-        using spectrums_type = typename std::remove_reference<SPECTRUMS>::type;
-
-        buffer_for_fft< sample_type::sampling_number > buffer_;
-
-        // result assign
-        {
-            apply_fft( sample_, buffer_, fft_, []( data const& d )
-            {
-                return d.acceleration.x;
-            } );
-            for( int i = 0; i < spectrums_type::number; ++i )
-            {
-                spectrums_.acceleration_x[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
-            }
-        }
-        {
-            apply_fft( sample_, buffer_, fft_, []( data const& d )
-            {
-                return d.acceleration.y;
-            } );
-            for( int i = 0; i < spectrums_type::number; ++i )
-            {
-                spectrums_.acceleration_y[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
-            }
-        }
-        {
-            apply_fft( sample_, buffer_, fft_, []( data const& d )
-            {
-                return d.acceleration.z;
-            } );
-            for( int i = 0; i < spectrums_type::number; ++i )
-            {
-                spectrums_.acceleration_z[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
-            }
-        }
-    }
-    template< typename SAMPLE >
-    void update_sample(
-        SAMPLE&& sample_,
-        communication_node::buffer_type& data_ )
+    void debug_view( cocos2d::Layer* that, player::spectrums_type const& spectrums_, action const& action_, cocos2d::Vec2 origin_ )
     {
         using namespace cocos2d;
-
-        // parse and push
-        for( auto&& i : communication::parse( data_ ) )
-        {
-            sample_.push(
-                static_cast<std::chrono::nanoseconds>( std::get<0>( i ) ),
-                std::get<1>( i ),
-                []( unsigned left_, unsigned right_, data before_data_, data data_ )
-            {
-                return ( data_ * left_ + before_data_ * right_ ) / ( left_ + right_ );
-            } );
-        }
-    }
-    template< typename SPECTRUMS >
-    void update_action( SPECTRUMS&& spectrums_, action& action_ )
-    {
-        if( spectrums_.acceleration_y[ 1 ] > 1500 )
-        {
-            action_ = action::slash;
-        }
-        else if( spectrums_.acceleration_x[ 1 ] > 1000 )
-        {
-            action_ = action::thrust;
-        }
-        else if( spectrums_.acceleration_z[ 1 ] > 1000 )
-        {
-            action_ = action::guard;
-        }
-        else if( spectrums_.acceleration_x[ 1 ] < 100
-            && spectrums_.acceleration_y[ 1 ] < 100
-            && spectrums_.acceleration_z[ 1 ] < 100 )
-        {
-            action_ = action::idol;
-        }
-    }
-    
-    void debug_view( battle_scene* that, battle_scene::spectrums_type& spectrums_, action& action_, cocos2d::Vec2 origin_ )
-    {
-        using namespace cocos2d;
-        auto draw_ = static_cast<cocos2d::DrawNode*>( that->getChildByName( "draw_node1" ) );
+        auto draw_ = static_cast<cocos2d::DrawNode*>( that->getChildByName( "draw_node" ) );
         if( draw_ == nullptr )
         {
             draw_ = DrawNode::create();
-            draw_->setName( "draw_node1" );
-            that->addChild( draw_, 5 );
+            draw_->setName( "draw_node" );
+            that->addChild( draw_, 20 );
         }
         draw_->clear();
         draw_->drawSegment(
@@ -151,7 +39,7 @@ namespace
                 ( static_cast<float>( spectrums_.acceleration_x[ 1 ] ) )
             },
             30,
-            cocos2d::Color4F{ 1, 0, 0, 0.5f } );
+            cocos2d::Color4F{ 1, 0, 0, 1 } );
         draw_->drawSegment(
             origin_ + cocos2d::Vec2{ 110, 0 },
             origin_ + cocos2d::Vec2{
@@ -159,7 +47,7 @@ namespace
                 ( static_cast<float>( spectrums_.acceleration_y[ 1 ] ) )
             },
             30,
-            cocos2d::Color4F{ 0, 1, 0, 0.5f } );
+            cocos2d::Color4F{ 0, 1, 0, 1 } );
         draw_->drawSegment(
             origin_ + cocos2d::Vec2{ 170, 0 },
             origin_ + cocos2d::Vec2{
@@ -167,14 +55,14 @@ namespace
                 ( static_cast<float>( spectrums_.acceleration_z[ 1 ] ) )
             },
             30,
-            cocos2d::Color4F{ 0, 0, 1, 0.5f } );
+            cocos2d::Color4F{ 0, 0, 1, 1 } );
 
         auto text_ = static_cast<cocos2d::Label*>( that->getChildByName( "text" ) );
         if( text_ == nullptr )
         {
             text_ = cocos2d::Label::createWithTTF( "", "font/Stroke.ttf", 40 );
             text_->setName( "text" );
-            text_->setColor( Color3B::BLACK );
+            text_->setColor( Color3B::WHITE );
             text_->setPosition( origin_ + cocos2d::Vec2{ 100, app_height - 60 } );
             that->addChild( text_, 20 );
         }
@@ -183,7 +71,7 @@ namespace
         {
             text_x = cocos2d::Label::createWithTTF( "", "font/Stroke.ttf", 40 );
             text_x->setName( "textx" );
-            text_x->setColor( Color3B::BLACK );
+            text_x->setColor( Color3B::WHITE );
             text_x->setAnchorPoint( Vec2::ANCHOR_TOP_RIGHT );
             text_x->setPosition( origin_ + cocos2d::Vec2{ 200, app_height - 100 } );
             that->addChild( text_x, 20 );
@@ -193,7 +81,7 @@ namespace
         {
             text_y = cocos2d::Label::createWithTTF( "", "font/Stroke.ttf", 40 );
             text_y->setName( "texty" );
-            text_y->setColor( Color3B::BLACK );
+            text_y->setColor( Color3B::WHITE );
             text_y->setAnchorPoint( Vec2::ANCHOR_TOP_RIGHT );
             text_y->setPosition( origin_ + cocos2d::Vec2{ 200, app_height - 140 } );
             that->addChild( text_y, 20 );
@@ -203,7 +91,7 @@ namespace
         {
             text_z = cocos2d::Label::createWithTTF( "", "font/Stroke.ttf", 40 );
             text_z->setName( "textz" );
-            text_z->setColor( Color3B::BLACK );
+            text_z->setColor( Color3B::WHITE );
             text_z->setAnchorPoint( Vec2::ANCHOR_TOP_RIGHT );
             text_z->setPosition( origin_ + cocos2d::Vec2{ 200, app_height - 180 } );
             that->addChild( text_z, 20 );
@@ -226,16 +114,15 @@ namespace
             {
                 text_->setString( "guard" ); break;
             }
-            case action::idol:
+            case action::idle:
             {
-                text_->setString( "idol" ); break;
+                text_->setString( "idle" ); break;
             }
         }
     }
 }
 
 battle_scene::battle_scene()
-    : fft_{ sample::sampling_number }
 {
 }
 
@@ -253,6 +140,14 @@ bool battle_scene::init( communication_node* com_node_ )
     com_node_->removeFromParent();
     addChild( com_node_ );
     com_node_->release();
+
+    auto player_1 = player::create();
+    player_1->setName( "player_1" );
+    addChild( player_1 );
+
+    auto player_2 = player::create();
+    player_2->setName( "player_2" );
+    addChild( player_2 );
 
     auto droid_1p = Sprite::create( "img/stubdroid.png" );
     droid_1p->setPosition( Vec2{ app_width / 3, app_height *2 / 5 } );
@@ -326,18 +221,32 @@ void battle_scene::update( float )
     auto com_node_ = static_cast<communication_node*>( getChildByName( "com_node" ) );
     com_node_->receive_1p( [ = ]( auto&& com_, auto&& buffer_ )
     {
-        update_sample( sample_1p, buffer_ );
+        auto player_ = static_cast<player*>( getChildByName( "player_1" ) );
+        player_->update_state( buffer_ );
         com_->send_1p();
-        update_spectrums( sample_1p, spectrums_1p, fft_ );
-        update_action( spectrums_1p, action_1p );
-        debug_view( this, spectrums_1p, action_1p, Vec2{ 0, 0 } );
+
+        auto layer_1 = static_cast<cocos2d::Layer*>( getChildByName( "layer_1" ) );
+        if( layer_1 == nullptr )
+        {
+            layer_1 = Layer::create();
+            layer_1->setName( "layer_1" );
+            addChild( layer_1, 20 );
+        }
+        debug_view( layer_1, player_->get_spectrums(), player_->get_action(), Vec2{ 0, 0 } );
     } );
     com_node_->receive_2p( [ = ]( auto&& com_, auto&& buffer_ )
     {
-        update_sample( sample_2p, buffer_ );
+        auto player_ = static_cast<player*>( getChildByName( "player_2" ) );
+        player_->update_state( buffer_ );
         com_->send_2p();
-        update_spectrums( sample_2p, spectrums_2p, fft_ );
-        update_action( spectrums_2p, action_2p );
-        debug_view( this, spectrums_1p, action_1p, Vec2{ 220, 0 } );
+
+        auto layer_2 = static_cast<cocos2d::Layer*>( getChildByName( "layer_2" ) );
+        if( layer_2 == nullptr )
+        {
+            layer_2 = Layer::create();
+            layer_2->setName( "layer_2" );
+            addChild( layer_2, 20 );
+        }
+        debug_view( layer_2, player_->get_spectrums(), player_->get_action(), Vec2{ 0, 0 } );
     } );
 }

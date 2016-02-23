@@ -27,39 +27,9 @@ namespace c2xa
 
     namespace scene
     {
-        template< size_t number_ >
-        struct spectrums
-        {
-        public:
-            static constexpr auto number = number_;
-            using spectrum = std::array<double, number>;
-            spectrum acceleration_x;
-            spectrum acceleration_y;
-            spectrum acceleration_z;
-        };
-        enum class action
-        {
-            slash,
-            thrust,
-            guard,
-            idol,
-        };
         class battle_scene
             : public cocos2d::Scene
         {
-        public:
-            using sample = math::sample<data, 16, 16>;
-            using spectrums_type = spectrums< battle_scene::sample::analysis_line_number >;
-
-        private:
-            fft fft_;
-            sample sample_1p;
-            sample sample_2p;
-            spectrums_type spectrums_1p;
-            spectrums_type spectrums_2p;
-            action action_1p;
-            action action_2p;
-
         public:
             battle_scene();
             static battle_scene* create( communication_node* c )

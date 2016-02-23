@@ -65,6 +65,12 @@ namespace c2xa
         void dfst( double *a, double *t );	//実非対称フーリエ変換を用いたサイン変換
     };
     using fft = fast_fourier_transform;
+    template< size_t size_ >
+    static fft* get_fft()
+    {
+        static fft fft_{ size_ };
+        return &fft_;
+    }
 }
 
 #endif//C2XA_FAST_FOURIER_TRANSFORM_HPP

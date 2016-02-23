@@ -69,6 +69,9 @@
     <ClCompile Include="..\Classes\c2xa\initialize_scene.cpp">
       <Filter>src\c2xa</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\player.cpp">
+      <Filter>src\c2xa</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -135,6 +138,9 @@
       <Filter>src\c2xa</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\initialize_scene.hpp">
+      <Filter>src\c2xa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\player.hpp">
       <Filter>src\c2xa</Filter>
     </ClInclude>
   </ItemGroup>

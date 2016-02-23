@@ -102,14 +102,7 @@ namespace c2xa
                         {
                             break;
                         }
-                        if( buffer_[ 0 ] == 'o' && buffer_[ 1 ] == 'k' )
-                        {
-                            cocos2d::log("返信でしたンゴ");
-                        }
-                        else
-                        {
-                            func_( this, buffer_ );
-                        }
+                        func_( this, buffer_ );
                     }
                 }
                 catch( bluetooth_disconnect_exception const& )

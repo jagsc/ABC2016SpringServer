@@ -46,7 +46,7 @@ bool title_scene::init( communication_node* com_node_ )
     logo_->setPosition( Vec2{ app_width - 100, app_height - 100 } );
     addChild( logo_, 10 );
 
-    auto particle_ = ParticleSystemQuad::create( "particle/fire.plist" );
+    auto particle_ = ParticleSystemQuad::create( "particle/spark.plist" );
     particle_->setPosition( Vec2{ app_width / 2, 0 } );
     particle_->resetSystem();
     addChild( particle_, 2 );

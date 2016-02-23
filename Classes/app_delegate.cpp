@@ -57,8 +57,12 @@ bool app_delegete::applicationDidFinishLaunching() {
 
     //c2xa::lua::initialize_engine( c2xa::lua::get_engine() );
     //c2xa::lua::initialize_state( c2xa::lua::get_state() );
-
-    director->runWithScene( c2xa::initialize_scene() );
+    auto s = c2xa::initialize_scene();
+    if( s == nullptr )
+    {
+        return false;
+    }
+    director->runWithScene( s );
 
     return true;
 }

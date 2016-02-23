@@ -14,13 +14,8 @@ using namespace c2xa::scene;
 
 
 main_scene::main_scene()
-try
     : fft_{ sample::sampling_number }
 {
-}
-catch( c2xa::bluetooth_exception& e )
-{
-    throw e;
 }
 
 main_scene::~main_scene()

@@ -31,16 +31,6 @@ namespace c2xa
             : public cocos2d::Scene
         {
         public:
-            using sample = math::sample<data, 16, 16>;
-            using fft_buffer_type = std::array<double, battle_scene::sample::sampling_number * 2>;
-
-        private:
-            fft fft_;
-            sample sample_1p;
-            sample sample_2p;
-            fft_buffer_type tmp_;
-
-        public:
             battle_scene();
             static battle_scene* create( communication_node* c )
             {

@@ -20,6 +20,7 @@
 #include <array>
 #include <tuple>
 #include <chrono>
+#include <fstream>
 
 namespace c2xa
 {
@@ -45,12 +46,11 @@ namespace c2xa
             static constexpr unsigned long double window_size          = sampling_number / sampling_frequency;
             static constexpr std::chrono::nanoseconds::rep sampling_period  = 1000000000 / sampling_frequency; //< nanoseconds
             //static constexpr unsigned long double frequency_resolution = 1 / window_size;
-            
+            std::ofstream ofs{ "Y:\\jagsc\\test.csv" };
         private:
             std::list<element> list_;
             std::chrono::nanoseconds before_time_;
             data before_data_;
-            data sum_;
             std::chrono::nanoseconds next_ = std::chrono::nanoseconds{ 0 };
 
         public:
@@ -61,12 +61,10 @@ namespace c2xa
                 {
                     next_ = timestamp_ + std::chrono::nanoseconds{ sampling_period };
                     list_.push_back( std::tie( timestamp_, data_ ) );
-                    sum_ = data_;
                 }
                 else
                 {
                     // データが次のサンプリングポイントを超えた
-                    int i = 0;
                     while( timestamp_ >= next_ )
                     {
                         auto right_ = timestamp_ - next_;
@@ -76,17 +74,14 @@ namespace c2xa
                         // ( data_ * left_ + before_data_ * right_ ) / ( left_ + right_ )
 
                         list_.push_back( std::tie( next_, func_( static_cast<unsigned>( left_.count() ), static_cast<unsigned>( right_.count() ), before_data_, data_ ) ) );
-
-                        sum_ += data_;
+                        ofs << data_.acceleration.x << "," << data_.acceleration.y << "," << data_.acceleration.z << "," << data_.gyro.x << "," << data_.gyro.y << "," << data_.gyro.z <<std::endl;
 
                         if( list_.size() > sampling_number )
                         {
-                            sum_ -= std::get<1>( list_.front() );
                             list_.pop_front(); // サンプル数を超えたら破棄
                         }
 
                         next_ += std::chrono::nanoseconds{ sampling_period };
-                        ++i;
                     }
                 }
                 before_time_ = timestamp_;
@@ -103,10 +98,6 @@ namespace c2xa
             auto size() const
             {
                 return list_.size();
-            }
-            auto average() const
-            {
-                return sum_ / list_.size();
             }
         };
     }

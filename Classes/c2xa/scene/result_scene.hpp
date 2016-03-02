@@ -14,17 +14,23 @@
 
 #include <cocos2d.h>
 
+#include <c2xa/utility.hpp>
+
 namespace c2xa
 {
+    class communication_node;
+
     namespace scene
     {
         class result_scene
             : public cocos2d::Scene
         {
         public:
-            CREATE_FUNC( result_scene );
-            virtual bool init() override;
-            virtual void update( float ) override;
+            static result_scene* create( communication_node* c )
+            {
+                return create_template<result_scene>( c );
+            }
+            virtual bool init( communication_node* );
         };
     }
 }

@@ -150,8 +150,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\data\sensor.csv">
-      <Filter>resource</Filter>
-    </None>
+    <Image Include="res\game.ico" />
   </ItemGroup>
 </Project>

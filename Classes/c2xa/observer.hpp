@@ -52,7 +52,7 @@ namespace c2xa
             callback_( a );
         }
         void bind( subject<DATA>* a, bool pre_registry_ = false );
-        void cancel();
+        void cancel( bool = false );
     };
     template< typename DATA >
     class subject_interface
@@ -114,11 +114,14 @@ namespace c2xa
         }
         void clear()
         {
-            for( auto i : observers_ )
+            if( observers_.size() != 0 )
             {
-                i->cancel();
+                for( auto i = observers_.begin(); i != observers_.end(); ++i )
+                {
+                    (*i)->cancel( true );
+                }
+                observers_.clear();
             }
-            observers_.clear();
         }
     };
     template< typename DATA >
@@ -143,11 +146,14 @@ namespace c2xa
         }
     }
     template< typename DATA >
-    void observer<DATA>::cancel()
+    void observer<DATA>::cancel( bool pre_ )
     {
         if( bind_ )
         {
-            bind_->remove_observer( this, true );
+            if( !pre_ )
+            {
+                bind_->remove_observer( this, true );
+            }
             bind_ = nullptr;
         }
     }

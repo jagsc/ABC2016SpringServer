@@ -125,7 +125,7 @@ namespace
     using buffer_for_fft = std::array<double, sampling_number_ * 2>;
 
     template< typename SAMPLE, typename BUFFER, typename FUNC >
-    void apply_fft(
+    bool apply_fft(
         SAMPLE&& sample_,
         BUFFER&& buffer_,
         FUNC&& func )
@@ -147,7 +147,9 @@ namespace
             }
 
             fft_->cdft( 1, buffer_.data() ); // FFT 結果はdata_に代入される
+            return true;
         }
+        return false;
     }
 
     template< typename SAMPLE, typename SPECTRUMS >
@@ -162,66 +164,84 @@ namespace
 
         // result assign
         {
-            apply_fft( sample_, buffer_, []( data const& d )
+            auto is_ = apply_fft( sample_, buffer_, []( data const& d )
             {
                 return d.acceleration.x;
             } );
-            for( int i = 0; i < spectrums_type::number; ++i )
+            if( is_ )
             {
-                spectrums_.acceleration_x[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
-                spectrums_.phase_.acceleration_x[ i ] = std::atan( buffer_[ i * 2 + 1 ] / buffer_[ i * 2 ] );
+                for( int i = 0; i < spectrums_type::number; ++i )
+                {
+                    spectrums_.acceleration_x[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                    spectrums_.phase_.acceleration_x[ i ] = std::atan( buffer_[ i * 2 + 1 ] / buffer_[ i * 2 ] );
+                }
             }
         }
         {
-            apply_fft( sample_, buffer_, []( data const& d )
+            auto is_ = apply_fft( sample_, buffer_, []( data const& d )
             {
                 return d.acceleration.y;
             } );
-            for( int i = 0; i < spectrums_type::number; ++i )
+            if( is_ )
             {
-                spectrums_.acceleration_y[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
-                spectrums_.phase_.acceleration_y[ i ] = std::atan( buffer_[ i * 2 + 1 ] / buffer_[ i * 2 ] );
+                for( int i = 0; i < spectrums_type::number; ++i )
+                {
+                    spectrums_.acceleration_y[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                    spectrums_.phase_.acceleration_y[ i ] = std::atan( buffer_[ i * 2 + 1 ] / buffer_[ i * 2 ] );
+                }
             }
         }
         {
-            apply_fft( sample_, buffer_, []( data const& d )
+            auto is_ = apply_fft( sample_, buffer_, []( data const& d )
             {
                 return d.acceleration.z;
             } );
-            for( int i = 0; i < spectrums_type::number; ++i )
+            if( is_ )
             {
-                spectrums_.acceleration_z[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
-                spectrums_.phase_.acceleration_z[ i ] = std::atan( buffer_[ i * 2 + 1 ] / buffer_[ i * 2 ] );
+                for( int i = 0; i < spectrums_type::number; ++i )
+                {
+                    spectrums_.acceleration_z[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                    spectrums_.phase_.acceleration_z[ i ] = std::atan( buffer_[ i * 2 + 1 ] / buffer_[ i * 2 ] );
+                }
             }
         }
         {
-            apply_fft( sample_, buffer_, []( data const& d )
+            auto is_ = apply_fft( sample_, buffer_, []( data const& d )
             {
                 return d.gyro.x;
             } );
-            for( int i = 0; i < spectrums_type::number; ++i )
+            if( is_ )
             {
-                spectrums_.gyro_x[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                for( int i = 0; i < spectrums_type::number; ++i )
+                {
+                    spectrums_.gyro_x[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                }
             }
         }
         {
-            apply_fft( sample_, buffer_, []( data const& d )
+            auto is_ = apply_fft( sample_, buffer_, []( data const& d )
             {
                 return d.gyro.y;
             } );
-            for( int i = 0; i < spectrums_type::number; ++i )
+            if( is_ )
             {
-                spectrums_.gyro_y[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                for( int i = 0; i < spectrums_type::number; ++i )
+                {
+                    spectrums_.gyro_y[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                }
             }
         }
         {
-            apply_fft( sample_, buffer_, []( data const& d )
+            auto is_ = apply_fft( sample_, buffer_, []( data const& d )
             {
                 return d.gyro.z;
             } );
-            for( int i = 0; i < spectrums_type::number; ++i )
+            if( is_ )
             {
-                spectrums_.gyro_z[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                for( int i = 0; i < spectrums_type::number; ++i )
+                {
+                    spectrums_.gyro_z[ i ] = std::pow( buffer_[ i * 2 ], 2 ) + std::pow( buffer_[ i * 2 + 1 ], 2 ) / sample_type::sampling_number;
+                }
             }
         }
     }
@@ -293,6 +313,7 @@ bool player::init( number n )
     state_ = state::defenseless;
     hp_ = player_max_hp;
     action_ = action::idle;
+    spectrums_ = {};
     scheduleUpdate();
 
     auto droid_ = Sprite::create( "img/stubdroid.png" );
@@ -326,6 +347,10 @@ void player::update( float )
         addChild( viewer_ );
     }
 #endif
+}
+
+void player::judge()
+{
     using namespace cocos2d;
     if( state_ == state::defenseless )
     {
@@ -333,6 +358,8 @@ void player::update( float )
         {
             if( is_updated_ )
             {
+                update_spectrums( sample_, spectrums_ );
+                update_action( spectrums_, action_ );
                 is_updated_ = false;
                 if( action_ != action::idle && action_ != action::messy )
                 {
@@ -411,8 +438,6 @@ void player::update( float )
 void player::update_state( communication_node::buffer_type& data_ )
 {
     update_sample( sample_, data_ );
-    update_spectrums( sample_, spectrums_ );
-    update_action( spectrums_, action_ );
     is_updated_ = true;
 }
 
@@ -469,11 +494,11 @@ void player::damage( int dm_ )
         Sequence::create(
             Spawn::create(
                 Sequence::create(
-                    MoveTo::create( 0.3f, ( number_ == number::_1p ? pos_1p - Vec2{ 100, 0 } : pos_2p + Vec2{ 100, 0 } ) ),
-                    MoveTo::create( 0.7f, ( number_ == number::_1p ? pos_1p : pos_2p ) ),
+                    MoveTo::create( 0.4f, ( number_ == number::_1p ? pos_1p - Vec2{ 100, 0 } : pos_2p + Vec2{ 100, 0 } ) ),
+                    MoveTo::create( 0.8f, ( number_ == number::_1p ? pos_1p : pos_2p ) ),
                     nullptr ),
                 RotateTo::create( 0.1f, 0 ),
-                Blink::create( 1.f, 6 ),
+                Blink::create( 1.2f, 6 ),
                 nullptr ),
             CallFunc::create( [ this, droid_ ]{ state_ = state::defenseless; droid_->setVisible( true ); droid_->release(); } ),
         nullptr ) );

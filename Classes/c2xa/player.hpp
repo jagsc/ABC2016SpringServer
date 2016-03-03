@@ -94,6 +94,7 @@ namespace c2xa
         virtual void update( float ) override;
 
         void update_state( communication_node::buffer_type& );
+        void judge();
         void damage( int );
 
         spectrums_type const& get_spectrums() const

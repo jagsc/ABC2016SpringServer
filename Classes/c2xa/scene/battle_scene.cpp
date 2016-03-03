@@ -21,6 +21,16 @@
 using namespace c2xa;
 using namespace c2xa::scene;
 
+namespace
+{
+    void replaceTexture( cocos2d::Sprite* sprite, std::string file_name )
+    {
+        auto frame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName( file_name );
+        sprite->setTexture( frame->getTexture() );
+        sprite->setTextureRect( frame->getRect() );
+    }
+}
+
 battle_scene::battle_scene()
 {
 }
@@ -90,8 +100,6 @@ bool battle_scene::init( communication_node* com_node_ )
     grid_fire_->runAction( RepeatForever::create( Waves::create( 1.f, Size{ 5, 10 }, 5, 0, false, true ) ) );
     addChild( grid_fire_, 5 );
 
-    state_ = state::fighting;
-
     auto dispatcher = Director::getInstance()->getEventDispatcher();
     auto keyboard_listener_ = EventListenerKeyboard::create();
     keyboard_listener_->onKeyPressed = [ = ]( EventKeyboard::KeyCode key_, Event* event_ )
@@ -113,6 +121,30 @@ bool battle_scene::init( communication_node* com_node_ )
 
     bgm_id = cocos2d::experimental::AudioEngine::play2d( "snd/battle_bgm.mp3", true, 0.3f, nullptr );
 
+    auto cnts_ = Label::createWithTTF( "READY", "font/Stroke.ttf", 100 );
+    cnts_->setPosition( { app_width / 2, app_height / 2 } );
+    cnts_->setColor( Color3B{ 255, 255, 99 } );
+    cnts_->runAction(
+        Sequence::create(
+            DelayTime::create( 2.5f ),
+            CallFunc::create([ cnts_ ]{ cnts_->setString( "3" ); }),
+            DelayTime::create( 1.f ),
+            CallFunc::create([ cnts_ ]{ cnts_->setString( "2" ); }),
+            DelayTime::create( 1.f ),
+            CallFunc::create([ cnts_ ]{ cnts_->setString( "1" ); }),
+            DelayTime::create( 1.f ),
+            CallFunc::create([ cnts_, this ]{
+                cnts_->setString( "fight" );
+                state_ = state::fighting;
+                cocos2d::experimental::AudioEngine::play2d( "snd/fight.mp3", false, 0.3f, nullptr );
+            }),
+            DelayTime::create( 0.3f ),
+            FadeOut::create( 0.7f ),
+            RemoveSelf::create( true ),
+            nullptr )
+    );
+    addChild( cnts_, 50 );
+
     return true;
 }
 
@@ -124,6 +156,7 @@ void battle_scene::update( float )
     auto player_1 = static_cast<player*>( getChildByName( "player_1" ) );
     auto player_2 = static_cast<player*>( getChildByName( "player_2" ) );
 
+    // endになったらcom_node_は消えますのでreceiveすると落ちます
     if( state_ != state::end )
     {
         com_node_->receive_1p( [ = ]( auto&& com_, auto&& buffer_ )
@@ -140,6 +173,8 @@ void battle_scene::update( float )
 
     if( state_ == state::fighting )
     {
+        player_1->judge();
+        player_2->judge();
         if( player_1->get_state() == player::state::defenseless && player_2->get_state() == player::state::defenseless )
         {
             auto judge = []( player* player_a, player* player_b )
@@ -191,6 +226,7 @@ void battle_scene::update( float )
 
         auto result_effect = [ = ]( int winner )
         {
+            cocos2d::experimental::AudioEngine::play2d( "snd/gong.mp3", false, 0.3f, nullptr );
             runAction(
                 Sequence::create(
                     DelayTime::create( 1.f ),
@@ -267,37 +303,58 @@ void battle_scene::update( float )
         }
     }
 
+    auto gauge1_text = static_cast<cocos2d::Label*>( getChildByName( "gauge1_text" ) );
+    if( gauge1_text == nullptr )
+    {
+        gauge1_text = Label::createWithTTF( "1p", "font/Stroke.ttf", 32 );
+        gauge1_text->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
+        gauge1_text->setPosition( { 80, app_height - 100 } );
+        gauge1_text->setName( "gauge1_text" );
+        addChild( gauge1_text, 30 );
+    }
+    gauge1_text->setString( ( "1p: " + std::to_string( player_1->get_hp() ) ).c_str() );
     auto gauge1 = static_cast<cocos2d::Sprite*>( getChildByName( "gauge1" ) );
     if( gauge1 == nullptr )
     {
-        gauge1 = Sprite::create();
-        auto gauge1_name = Label::createWithTTF( "1p", "font/Stroke.ttf", 32 );
-        gauge1_name->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
-        gauge1_name->setPosition( { 50, app_height - 70 } );
-        gauge1->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
-        gauge1->setPosition( { 50, app_height - 100 } );
-        gauge1->setColor( Color3B::YELLOW );
+        auto gauge_frame = Sprite::create( "img/gauge_frame.png" );
+        gauge_frame->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+        gauge_frame->setPosition( { 50, app_height - 100 } );
+
+        gauge1 = Sprite::create( "img/gauge.png" );
+        gauge1->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+        gauge1->setPosition( { 70, app_height - 120 } );
         gauge1->setName( "gauge1" );
+
         addChild( gauge1, 30 );
-        addChild( gauge1_name, 30 );
+        addChild( gauge_frame, 30 );
     }
-    gauge1->setTextureRect( Rect{ 0, 0, 750.f * player_1->get_hp() / player_max_hp, 30  } );
+    gauge1->setScaleX( static_cast<float>( player_1->get_hp() ) / player_max_hp );
+    auto gauge2_text = static_cast<cocos2d::Label*>( getChildByName( "gauge2_text" ) );
+    if( gauge2_text == nullptr )
+    {
+        gauge2_text = Label::createWithTTF( "2p", "font/Stroke.ttf", 32 );
+        gauge2_text->setAnchorPoint( Vec2::ANCHOR_BOTTOM_RIGHT );
+        gauge2_text->setPosition( { app_width - 80, app_height - 100 } );
+        gauge2_text->setName( "gauge2_text" );
+        addChild( gauge2_text, 30 );
+    }
+    gauge2_text->setString( ( "2p: " + std::to_string( player_2->get_hp() ) ).c_str() );
     auto gauge2 = static_cast<cocos2d::Sprite*>( getChildByName( "gauge2" ) );
     if( gauge2 == nullptr )
     {
-        gauge2 = Sprite::create();
-        auto gauge2_name = Label::createWithTTF( "2p", "font/Stroke.ttf", 32 );
-        gauge2_name->setAnchorPoint( Vec2::ANCHOR_BOTTOM_RIGHT );
-        gauge2_name->setPosition( { app_width - 50, app_height - 70 } );
-        gauge2->setAnchorPoint( Vec2::ANCHOR_BOTTOM_RIGHT );
-        gauge2->setPosition( { app_width - 50, app_height - 100 } );
-        gauge2->setFlippedX( true );
-        gauge2->setColor( Color3B::YELLOW );
+        auto gauge_frame = Sprite::create( "img/gauge_frame.png" );
+        gauge_frame->setAnchorPoint( Vec2::ANCHOR_TOP_RIGHT );
+        gauge_frame->setPosition( { app_width - 50, app_height - 100 } );
+
+        gauge2 = Sprite::create( "img/gauge.png" );
+        gauge2->setAnchorPoint( Vec2::ANCHOR_TOP_RIGHT );
+        gauge2->setPosition( { app_width - 70, app_height - 120 } );
         gauge2->setName( "gauge2" );
+
         addChild( gauge2, 30 );
-        addChild( gauge2_name, 30 );
+        addChild( gauge_frame, 30 );
     }
-    gauge2->setTextureRect( Rect{ app_width - 50 - ( 750.f * player_2->get_hp() / player_max_hp ), 0, ( 750.f * player_2->get_hp() / player_max_hp ), 30 } );
+    gauge2->setScaleX( static_cast<float>( player_2->get_hp() ) / player_max_hp );
 
 #ifdef COCOS2D_DEBUG
     auto layer_1 = static_cast<cocos2d::Layer*>( getChildByName( "layer_1" ) );

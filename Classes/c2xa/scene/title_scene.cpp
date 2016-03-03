@@ -15,6 +15,8 @@
 #include <c2xa/scene/battle_scene.hpp>
 #include <c2xa/communication/node.hpp>
 
+#include <AudioEngine.h>
+
 using namespace c2xa;
 using namespace c2xa::scene;
 
@@ -36,6 +38,13 @@ bool title_scene::init( communication_node* com_node_ )
     }
     setName( "title_scene" );
     scheduleUpdate();
+
+    com_node_->retain();
+    com_node_->removeFromParent();
+    addChild( com_node_ );
+    com_node_->release();
+
+    auto bgm_id = cocos2d::experimental::AudioEngine::play2d( "snd/title_bgm.mp3", true, 0.3f, nullptr );
 
     auto bg_ = Sprite::create( "img/title_bg.png" );
     bg_->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
@@ -67,14 +76,14 @@ bool title_scene::init( communication_node* com_node_ )
     auto blink_ = RepeatForever::create( Sequence::create( FadeTo::create( 0.3f, 255 ), FadeTo::create( 1.2f, 0 ), nullptr ) );
     text_message_->runAction( blink_ );
 
-    auto text_1p_ = Label::createWithTTF( "", "font/Stroke.ttf", 32 );
+    auto text_1p_ = Label::createWithTTF( com_node_->is_connection_1p() ? "1P: CONNECT" : "", "font/Stroke.ttf", 32 );
     text_1p_->setPosition( condition_1p_text_ + Vec2{ 7, 0 } );
     text_1p_->setColor( Color3B{ 255, 230, 99 } );
     text_1p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
     text_1p_->setName( "text_1p_condition" );
     addChild( text_1p_, 10 );
 
-    auto text_2p_ = Label::createWithTTF( "", "font/Stroke.ttf", 32 );
+    auto text_2p_ = Label::createWithTTF( com_node_->is_connection_2p() ? "2P: CONNECT" : "", "font/Stroke.ttf", 32 );
     text_2p_->setPosition( condition_2p_text_ );
     text_2p_->setColor( Color3B{ 255, 230, 99 } );
     text_2p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
@@ -156,14 +165,14 @@ bool title_scene::init( communication_node* com_node_ )
 
     com_node_->get_subject_1p()->registry_observer( observer_1p );
     com_node_->get_subject_2p()->registry_observer( observer_2p );
-    addChild( com_node_ );
 
     auto dispatcher = Director::getInstance()->getEventDispatcher();
     auto keyboard_listener_ = EventListenerKeyboard::create();
     keyboard_listener_->onKeyPressed = [ = ]( EventKeyboard::KeyCode key_, Event* event_ )
     {
-        if( true )
+        if( com_node_->is_connection_1p() && com_node_->is_connection_2p() || key_ == EventKeyboard::KeyCode::KEY_D )
         {
+            cocos2d::experimental::AudioEngine::stop( bgm_id );
             com_node_->send_1p( "scene:battle", 12 );
             com_node_->send_2p( "scene:battle", 12 );
             Director::getInstance()
@@ -173,8 +182,8 @@ bool title_scene::init( communication_node* com_node_ )
                         battle_scene::create( com_node_ )
                     )
                 );
+            dispatcher->removeEventListenersForTarget( this );
         }
-        dispatcher->removeEventListenersForTarget( this );
     };
     dispatcher->addEventListenerWithSceneGraphPriority( keyboard_listener_, this );
 

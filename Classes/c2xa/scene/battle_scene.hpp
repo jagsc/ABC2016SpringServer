@@ -31,7 +31,20 @@ namespace c2xa
             : public cocos2d::Scene
         {
         public:
+            enum class state
+            {
+                ready,
+                fighting,
+                end,
+            };
+
+        private:
+            state state_;
+            int bgm_id;
+
+        public:
             battle_scene();
+            ~battle_scene();
             static battle_scene* create( communication_node* c )
             {
                 return create_template<battle_scene>( c );

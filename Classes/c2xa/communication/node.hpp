@@ -51,6 +51,14 @@ namespace c2xa
         CREATE_FUNC( communication_node );
         virtual bool init() override;
         virtual void update( float ) override;
+        bool is_connection_1p() const
+        {
+            return connection_1p.get() != nullptr;
+        }
+        bool is_connection_2p() const
+        {
+            return connection_2p.get() != nullptr;
+        }
         subject::interface_type *const get_subject_1p()
         {
             return &subject_1p;

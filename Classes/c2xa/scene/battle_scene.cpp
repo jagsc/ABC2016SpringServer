@@ -288,6 +288,7 @@ void battle_scene::update( float )
         {
             // 相打ち
             state_ = state::end;
+            result_effect( 0 );
         }
         else if( player_1->is_dead() )
         {

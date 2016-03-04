@@ -7,8 +7,9 @@
 #define C2XA_SCENE_MAIN_SCENE_HPP
 
 #include <cocos2d.h>
-#include <c2xa/communication/bluetooth_server.hpp>
-#include <c2xa/sample.hpp>
+#include <c2xa/communication/bluetooth/server.hpp>
+#include <c2xa/communication/data.hpp>
+#include <c2xa/math/sample.hpp>
 #include <c2xa/math/fast_fourier_transform.hpp>
 
 namespace c2xa
@@ -19,11 +20,11 @@ namespace c2xa
             : public cocos2d::Scene
         {
         private:
-            static constexpr unsigned int sample_size = 256;
-            bluetooth::listen_server listen_server_;
-            std::unique_ptr<bluetooth::connection_server> connection_server_;
+            using sample = math::sample<data, 16, 16>;
+            bluetooth::listener listen_server_;
+            std::shared_ptr<bluetooth::connection> connection_server_;
             fft fft_;
-            sample<sample_size> sample_;
+            sample sample_;
             char buffer_[ 2024 ];
 
         public:

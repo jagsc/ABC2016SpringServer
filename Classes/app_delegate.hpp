@@ -2,7 +2,7 @@
 #define C2XA_APP_DELEGATE_HPP
 
 #include "cocos2d.h"
-#include <c2xa/communication/winsock.hpp>
+#include <c2xa/communication/windows_socket_api.hpp>
 
 /**
 @brief    The cocos2d Application.
@@ -11,7 +11,7 @@ The reason for implement as private inheritance is to hide some interface call b
 */
 class app_delegete : private cocos2d::Application
 {
-    c2xa::windows_socket_api wsa_;
+    c2xa::wsa wsa_;
 public:
     app_delegete();
     virtual ~app_delegete();

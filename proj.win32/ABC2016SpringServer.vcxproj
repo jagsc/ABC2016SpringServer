@@ -145,23 +145,55 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\app_delegate.cpp" />
-    <ClCompile Include="..\Classes\c2xa\communication\bluetooth_server.cpp" />
-    <ClCompile Include="..\Classes\c2xa\communication\winsock.cpp">
+    <ClCompile Include="..\Classes\c2xa\communication\bluetooth\server.cpp" />
+    <ClCompile Include="..\Classes\c2xa\communication\node.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\initialize_scene.cpp">
       <SubType>
       </SubType>
     </ClCompile>
     <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp" />
+    <ClCompile Include="..\Classes\c2xa\player.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\battle_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\demo_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\scene\main_scene.cpp" />
+    <ClCompile Include="..\Classes\c2xa\scene\result_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\title_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\app_delegate.hpp" />
-    <ClInclude Include="..\Classes\c2xa\communication\winsock.hpp">
+    <ClInclude Include="..\Classes\c2xa\communication\bluetooth\server.hpp" />
+    <ClInclude Include="..\Classes\c2xa\communication\node.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\config.hpp" />
-    <ClInclude Include="..\Classes\c2xa\communication\bluetooth_server.hpp" />
     <ClInclude Include="..\Classes\c2xa\communication\data.hpp">
       <SubType>
       </SubType>
@@ -182,16 +214,48 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\initialize_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\math\fast_fourier_transform.hpp" />
+    <ClInclude Include="..\Classes\c2xa\math\sample.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\observer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\optional.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\sample.hpp">
+    <ClInclude Include="..\Classes\c2xa\player.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\battle_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\demo_scene.hpp">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\scene\main_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\result_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\title_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\utility.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -213,7 +277,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ResourceCompile Include="game.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\data\sensor.csv" />
+    <Image Include="res\game.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

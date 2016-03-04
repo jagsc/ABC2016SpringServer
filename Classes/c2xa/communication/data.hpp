@@ -16,20 +16,149 @@
 
 namespace c2xa
 {
+    using data_type = float;
     struct acceleration
     {
-        float x;
-        float y;
-        float z;
+        data_type x;
+        data_type y;
+        data_type z;
+        
+        acceleration operator+( acceleration const& a ) const
+        {
+            return { x + a.x, y + a.y, z + a.z };
+        }
+        acceleration& operator+=( acceleration const& a )
+        {
+            x += a.x;
+            y += a.y;
+            z += a.z;
+            return *this;
+        }
+        acceleration operator*( acceleration const& a ) const
+        {
+            return { x * a.x, y * a.y, z * a.z };
+        }
+        acceleration& operator*=( acceleration const& a )
+        {
+            x *= a.x;
+            y *= a.y;
+            z *= a.z;
+            return *this;
+        }
+        template< typename Type >
+        acceleration operator*( Type a ) const
+        {
+            return { x * a, y * a, z * a };
+        }
+        template< typename Type >
+        acceleration& operator*=( Type a )
+        {
+            x *= a;
+            y *= a;
+            z *= a;
+            return *this;
+        }
+        template< typename Type >
+        acceleration operator/( Type a ) const
+        {
+            return { x / a, y / a, z / a };
+        }
+        template< typename Type >
+        acceleration& operator/=( Type a )
+        {
+            x /= a;
+            y /= a;
+            z /= a;
+            return *this;
+        }
     };
     struct gyro
     {
-        float x;
-        float y;
-        float z;
-    };
+        data_type x;
+        data_type y;
+        data_type z;
 
-    using data = std::tuple<acceleration, gyro>;
+        gyro operator+( gyro const& a ) const
+        {
+            return { x + a.x, y + a.y, z + a.z };
+        }
+        gyro& operator+=( gyro const& a )
+        {
+            x += a.x;
+            y += a.y;
+            z += a.z;
+            return *this;
+        }
+        gyro operator*( gyro const& a ) const
+        {
+            return { x * a.x, y * a.y, z * a.z };
+        }
+        gyro& operator*=( gyro const& a )
+        {
+            x *= a.x;
+            y *= a.y;
+            z *= a.z;
+            return *this;
+        }
+        template< typename Type >
+        gyro operator*( Type a ) const
+        {
+            return { x * a, y * a, z * a };
+        }
+        template< typename Type >
+        gyro& operator*=( Type a )
+        {
+            x *= a;
+            y *= a;
+            z *= a;
+            return *this;
+        }
+        template< typename Type >
+        gyro operator/( Type a ) const
+        {
+            return { x / a, y / a, z / a };
+        }
+        template< typename Type >
+        gyro& operator/=( Type a )
+        {
+            x /= a;
+            y /= a;
+            z /= a;
+            return *this;
+        }
+    };
+    struct data
+    {
+        acceleration acceleration;
+        gyro gyro;
+
+        data operator+( data const& a ) const
+        {
+            return{ acceleration + a.acceleration, gyro + a.gyro };
+        }
+        void operator+=( data const& a )
+        {
+            acceleration.x += a.acceleration.x;
+            acceleration.y += a.acceleration.y;
+            acceleration.z += a.acceleration.z;
+        }
+        void operator-=( data const& a )
+        {
+            acceleration.x -= a.acceleration.x;
+            acceleration.y -= a.acceleration.y;
+            acceleration.z -= a.acceleration.z;
+        }
+        template< typename Type >
+        data operator*( Type a ) const
+        {
+            return { acceleration * a, gyro * a };
+        }
+        template< typename Type >
+        data operator/( Type a ) const
+        {
+            return { acceleration / a, gyro / a };
+        }
+    };
 }
 
 #endif//C2XA_COMMUNICATION_DATA_HPP

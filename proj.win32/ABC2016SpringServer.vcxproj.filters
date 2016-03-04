@@ -28,6 +28,9 @@
     <Filter Include="src\c2xa\debug">
       <UniqueIdentifier>{a5aff4e1-bb56-4522-b076-6b5982bb4512}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\c2xa\communication\bluetooth">
+      <UniqueIdentifier>{7b7de0ce-a453-4183-acf5-8345c422b13a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,19 +45,37 @@
     <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp">
       <Filter>src\c2xa\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\c2xa\communication\bluetooth_server.cpp">
+    <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
       <Filter>src\c2xa\communication</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\c2xa\communication\winsock.cpp">
+    <ClCompile Include="..\Classes\c2xa\scene\title_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\battle_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\demo_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\scene\result_scene.cpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\communication\bluetooth\server.cpp">
+      <Filter>src\c2xa\communication\bluetooth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\communication\node.cpp">
       <Filter>src\c2xa\communication</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\initialize_scene.cpp">
+      <Filter>src\c2xa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\player.cpp">
+      <Filter>src\c2xa</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\scene\main_scene.hpp">
-      <Filter>src\c2xa\scene</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\app_delegate.hpp">
       <Filter>src</Filter>
@@ -64,9 +85,6 @@
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\math\fast_fourier_transform.hpp">
       <Filter>src\c2xa\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\sample.hpp">
-      <Filter>src\c2xa</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\parse.hpp">
       <Filter>src\c2xa\communication</Filter>
@@ -86,11 +104,44 @@
     <ClInclude Include="..\Classes\c2xa\optional.hpp">
       <Filter>src\c2xa</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\communication\winsock.hpp">
+    <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <Filter>src\c2xa\communication</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\c2xa\communication\bluetooth_server.hpp">
+    <ClInclude Include="..\Classes\c2xa\math\sample.hpp">
+      <Filter>src\c2xa\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\main_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\title_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\battle_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\demo_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\scene\result_scene.hpp">
+      <Filter>src\c2xa\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\bluetooth\server.hpp">
+      <Filter>src\c2xa\communication\bluetooth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\communication\node.hpp">
       <Filter>src\c2xa\communication</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\utility.hpp">
+      <Filter>src\c2xa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\observer.hpp">
+      <Filter>src\c2xa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\initialize_scene.hpp">
+      <Filter>src\c2xa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\player.hpp">
+      <Filter>src\c2xa</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -99,8 +150,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\data\sensor.csv">
-      <Filter>resource</Filter>
-    </None>
+    <Image Include="res\game.ico" />
   </ItemGroup>
 </Project>

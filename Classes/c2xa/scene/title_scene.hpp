@@ -29,6 +29,7 @@ namespace c2xa
         private:
             bool ready1p_ = false;
             bool ready2p_ = false;
+            std::mutex mtx;
 
         public:
             static title_scene* create( communication_node* c )

@@ -23,6 +23,35 @@
 
 namespace c2xa
 {
+    static cocos2d::Animation* create_animation( char const* format_, const char *cache_name_, int start_, int end_, bool reverse_ = false )
+    {
+        using namespace cocos2d;
+        auto animation_cache_ = AnimationCache::getInstance();
+        auto animation_ = animation_cache_->getAnimation( cache_name_ );
+        if( animation_ == nullptr )
+        {
+            animation_ = Animation::create();
+
+            for( int i = start_; i <= end_; ++i )
+            {
+                char buf[ 128 ] ={};
+                sprintf( buf, format_, i );
+                animation_->addSpriteFrameWithFile( buf );
+            }
+            if( reverse_ )
+            {
+                for( int i = end_; i >= start_; --i )
+                {
+                    char buf[ 128 ] ={};
+                    sprintf( buf, format_, i );
+                    animation_->addSpriteFrameWithFile( buf );
+                }
+            }
+            animation_->setRestoreOriginalFrame( true ); // 再生時間とフレーム数がずれた時は最初からリピート
+            animation_cache_->addAnimation( animation_, cache_name_ );
+        }
+        return animation_;
+    }
     template< size_t number_ >
     struct spectrums
     {

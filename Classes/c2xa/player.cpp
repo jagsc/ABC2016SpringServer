@@ -22,35 +22,6 @@ using namespace c2xa;
 
 namespace
 {
-    cocos2d::Animation* create_animation( char const* format_, const char *cache_name_, int start_, int end_, bool reverse_ = false )
-    {
-        using namespace cocos2d;
-        auto animation_cache_ = AnimationCache::getInstance();
-        auto animation_ = animation_cache_->getAnimation( cache_name_ );
-        if( animation_ == nullptr )
-        {
-            animation_ = Animation::create();
-
-            for( int i = start_; i <= end_; ++i )
-            {
-                char buf[ 128 ] ={};
-                sprintf( buf, format_, i );
-                animation_->addSpriteFrameWithFileName( buf );
-            }
-            if( reverse_ )
-            {
-                for( int i = end_; i >= start_; --i )
-                {
-                    char buf[ 128 ] ={};
-                    sprintf( buf, format_, i );
-                    animation_->addSpriteFrameWithFileName( buf );
-                }
-            }
-            animation_->setRestoreOriginalFrame( true ); // 再生時間とフレーム数がずれた時は最初からリピート
-            animation_cache_->addAnimation( animation_, cache_name_ );
-        }
-        return animation_;
-    }
 }
 
 #ifdef COCOS2D_DEBUG
@@ -413,7 +384,7 @@ void player::judge()
                     {
                         case action::thrust:
                         {
-                            auto thrust_action_ = Animate::create( create_animation( "droid/thrust/%d.png", "thrust", 0, 44 ) );
+                            auto thrust_action_ = Animate::create( create_animation( "droid/thrust/%d.png", "thrust", 0, 52 ) );
                             thrust_action_->setTag( 200 );
                             droid_->stopActionByTag( 100 );
                             droid_->runAction(

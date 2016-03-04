@@ -53,7 +53,7 @@ namespace c2xa
         messy,
         idle,
     };
-    static constexpr int player_max_hp = 800;
+    static constexpr int player_max_hp = 1000;
     class player
         : public cocos2d::Node
     {

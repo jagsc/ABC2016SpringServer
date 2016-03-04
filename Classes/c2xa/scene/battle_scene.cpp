@@ -21,16 +21,6 @@
 using namespace c2xa;
 using namespace c2xa::scene;
 
-namespace
-{
-    void replaceTexture( cocos2d::Sprite* sprite, std::string file_name )
-    {
-        auto frame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName( file_name );
-        sprite->setTexture( frame->getTexture() );
-        sprite->setTextureRect( frame->getRect() );
-    }
-}
-
 battle_scene::battle_scene()
 {
 }
@@ -175,54 +165,51 @@ void battle_scene::update( float )
     {
         player_1->judge();
         player_2->judge();
-        if( player_1->get_state() == player::state::defenseless && player_2->get_state() == player::state::defenseless )
+        auto judge = []( player* player_a, player* player_b )
         {
-            auto judge = []( player* player_a, player* player_b )
+            auto aa = player_a->get_action();
+            auto ab = player_b->get_action();
+            if( player_a->check_attacking() && player_b->get_state() == player::state::defenseless )
             {
-                auto aa = player_a->get_action();
-                auto ab = player_b->get_action();
-                if( player_a->check_attacking() )
+                if( ab == action::idle || ab == action::messy )
                 {
-                    if( ab == action::idle || ab == action::messy )
+                    player_b->damage( 120 );
+                }
+                else if( aa == action::thrust )
+                {
+                    if( ab == action::thrust )
+                    {
+                        player_a->damage( 100 );
+                        player_b->damage( 100 );
+                    }
+                    else if( ab == action::slash )
+                    {
+                    }
+                    else if( ab == action::guard )
                     {
                         player_b->damage( 100 );
                     }
-                    else if( aa == action::thrust )
+                }
+                else if( aa == action::slash )
+                {
+                    if( ab == action::thrust )
                     {
-                        if( ab == action::thrust )
-                        {
-                            player_a->damage( 100 );
-                            player_b->damage( 100 );
-                        }
-                        else if( ab == action::slash )
-                        {
-                        }
-                        else if( ab == action::guard )
-                        {
-                            player_b->damage( 100 );
-                        }
+                        player_b->damage( 120 );
                     }
-                    else if( aa == action::slash )
+                    else if( ab == action::slash )
                     {
-                        if( ab == action::thrust )
-                        {
-                            player_b->damage( 100 );
-                        }
-                        else if( ab == action::slash )
-                        {
-                            player_a->damage( 100 );
-                            player_b->damage( 100 );
-                        }
-                        else if( ab == action::guard )
-                        {
-                            player_a->damage( 100 );
-                        }
+                        player_a->damage( 120 );
+                        player_b->damage( 120 );
+                    }
+                    else if( ab == action::guard )
+                    {
+                        player_a->damage( 120 );
                     }
                 }
-            };
-            judge( player_1, player_2 );
-            judge( player_2, player_1 );
-        }
+            }
+        };
+        judge( player_1, player_2 );
+        judge( player_2, player_1 );
 
         auto result_effect = [ = ]( int winner )
         {
@@ -288,6 +275,7 @@ void battle_scene::update( float )
         {
             // 相打ち
             state_ = state::end;
+            result_effect( 0 );
         }
         else if( player_1->is_dead() )
         {

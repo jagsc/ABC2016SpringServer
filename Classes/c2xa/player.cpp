@@ -20,6 +20,10 @@
 
 using namespace c2xa;
 
+namespace
+{
+}
+
 #ifdef COCOS2D_DEBUG
 void player::debug( cocos2d::Layer* that )
 {
@@ -316,15 +320,26 @@ bool player::init( number n )
     spectrums_ = {};
     scheduleUpdate();
 
-    auto droid_ = Sprite::create( "img/stubdroid.png" );
+    auto droid_ = Sprite::create( "droid/idle/0.png" );
     switch( number_ )
     {
-        case number::_1p: droid_->setPosition( pos_1p ); droid_->setFlippedX( true ); break;
-        case number::_2p: droid_->setPosition( pos_2p ); break;
+        case number::_1p: droid_->setPosition( pos_1p ); break;
+        case number::_2p: droid_->setPosition( pos_2p ); droid_->setFlippedX( true ); break;
     }
     droid_->setName( "droid" );
     addChild( droid_, 10 );
+    auto default_animation_ = create_animation( "droid/idle/%d.png", "default", 0, 11, true );
+    default_animation_->setDelayPerUnit( 1.f / 6 );
+    auto action_ = RepeatForever::create( Animate::create( default_animation_ ) );
+    action_->setTag( 100 );
+    droid_->runAction( action_ );
 
+    auto slash_animation_ = create_animation( "droid/slash/%d.png", "slash", 0, 44 );
+    slash_animation_->setDelayPerUnit( 0.9f / 44 );
+
+    auto thrust_animation_ = create_animation( "droid/thrust/%d.png", "thrust", 0, 52 );
+    thrust_animation_->setDelayPerUnit( 1.2f / 52 );
+    
     return true;
 }
 #ifdef COCOS2D_DEBUG
@@ -369,18 +384,30 @@ void player::judge()
                     {
                         case action::thrust:
                         {
+                            auto thrust_action_ = Animate::create( create_animation( "droid/thrust/%d.png", "thrust", 0, 52 ) );
+                            thrust_action_->setTag( 200 );
+                            droid_->stopActionByTag( 100 );
                             droid_->runAction(
-                                Spawn::createWithTwoActions(
+                                Spawn::create(
+                                    thrust_action_,
                                     Sequence::create(
                                         MoveBy::create( 0.3f, Vec2{ number_ == number::_1p ? -100.f : 100.f, 0 } ),
-                                        MoveBy::create( 0.1f, Vec2{ number_ == number::_1p ? 600.f : -600.f, 0 } ),
+                                        MoveBy::create( 0.2f, Vec2{ number_ == number::_1p ? 600.f : -600.f, 0 } ),
                                         MoveBy::create( 0.7f, Vec2{ number_ == number::_1p ? -500.f : 500.f, 0 } ),
-                                        CallFunc::create( [ & ]{ is_doing_ = false; } ),
+                                        CallFunc::create( [ this, droid_ ]{
+                                            is_doing_ = false;
+                                            is_attacking_ = false;
+                                            droid_->stopActionByTag( 200 );
+                                            auto a_ = RepeatForever::create( Animate::create( create_animation( "droid/idle/%d.png", "default", 0, 11, true ) ) );
+                                            a_->setTag( 100 );
+                                            droid_->runAction( a_ );
+                                        } ),
                                         nullptr ),
                                     Sequence::create(
                                         DelayTime::create( 0.35f ),
                                         CallFunc::create( [ & ]{ cocos2d::experimental::AudioEngine::play2d( "snd/taa.mp3", false, 0.3f, nullptr ); is_attacking_ = true; } ),
-                                        nullptr ) ) );
+                                        nullptr ),
+                                    nullptr ) );
                             break;
                         }
                         case action::slash:
@@ -389,8 +416,12 @@ void player::judge()
                             bc_.controlPoint_1 ={ 0, 0 };
                             bc_.controlPoint_2 ={ number_ == number::_1p ? 100.f : -100.f, 200 };
                             bc_.endPosition ={ number_ == number::_1p ? 200.f : -200.f, 0 };
+                            auto slash_action_ = Animate::create( create_animation( "droid/slash/%d.png", "slash", 0, 44 ) );
+                            slash_action_->setTag( 300 );
+                            droid_->stopActionByTag( 100 );
                             droid_->runAction(
-                                Spawn::createWithTwoActions(
+                                Spawn::create(
+                                    slash_action_,
                                     Sequence::create(
                                         BezierBy::create( 0.5f, bc_ ),
                                         CallFunc::create( [ & ]{
@@ -406,12 +437,20 @@ void player::judge()
                                             getParent()->addChild( eff, 30 );
                                         } ),
                                         MoveTo::create( 0.4f, pos_1p ),
-                                        CallFunc::create( [ & ]{ is_doing_ = false; } ),
+                                        CallFunc::create( [ this, droid_ ]{
+                                            is_doing_ = false;
+                                            is_attacking_ = false;
+                                            droid_->stopActionByTag( 300 );
+                                            auto a_ = RepeatForever::create( Animate::create( create_animation( "droid/idle/%d.png", "default", 0, 11, true ) ) );
+                                            a_->setTag( 100 );
+                                            droid_->runAction( a_ );
+                                        } ),
                                         nullptr ),
                                     Sequence::create(
                                         DelayTime::create( 0.45f ),
                                         CallFunc::create( [ & ]{ cocos2d::experimental::AudioEngine::play2d( "snd/sokoda.mp3", false, 0.3f, nullptr ); is_attacking_ = true; } ),
-                                        nullptr ) ) );
+                                        nullptr ),
+                                    nullptr ) );
                             break;
                         }
                         case action::guard:
@@ -450,6 +489,9 @@ void player::damage( int dm_ )
 
     auto droid_ = static_cast<cocos2d::Sprite*>( getChildByName( "droid" ) );
     droid_->stopAllActions();
+    auto a_ = RepeatForever::create( Animate::create( create_animation( "droid/idle/%d.png", "default", 0, 11, true ) ) );
+    a_->setTag( 100 );
+    droid_->runAction( a_ );
 
     state_ = state::invincible;
 
@@ -491,16 +533,29 @@ void player::damage( int dm_ )
     
     droid_->retain();
     droid_->runAction(
-        Sequence::create(
             Spawn::create(
                 Sequence::create(
-                    MoveTo::create( 0.4f, ( number_ == number::_1p ? pos_1p - Vec2{ 100, 0 } : pos_2p + Vec2{ 100, 0 } ) ),
-                    MoveTo::create( 0.8f, ( number_ == number::_1p ? pos_1p : pos_2p ) ),
+                    MoveTo::create( 0.7f, ( number_ == number::_1p ? pos_1p - Vec2{ 100, 0 } : pos_2p + Vec2{ 100, 0 } ) ),
+                    MoveTo::create( 1.3f, ( number_ == number::_1p ? pos_1p : pos_2p ) ),
                     nullptr ),
                 RotateTo::create( 0.1f, 0 ),
-                Blink::create( 1.2f, 6 ),
-                nullptr ),
-            CallFunc::create( [ this, droid_ ]{ state_ = state::defenseless; droid_->setVisible( true ); droid_->release(); } ),
-        nullptr ) );
-    hp_ -= dm_;
+                Blink::create( 1.8f, 6 ),
+                Sequence::create(
+                    DelayTime::create( 2.f ),
+                    CallFunc::create( [ this, droid_ ]
+                    {
+                        state_ = state::defenseless;
+                        droid_->setVisible( true );
+                        droid_->release();
+                    } ),
+                    nullptr ),
+                nullptr ) );
+    if( dm_ >= hp_ )
+    {
+        hp_ = 0;
+    }
+    else
+    {
+        hp_ -= dm_;
+    }
 }

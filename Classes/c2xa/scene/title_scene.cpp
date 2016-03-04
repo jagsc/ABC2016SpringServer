@@ -175,17 +175,16 @@ bool title_scene::init( communication_node* com_node_ )
         {
             auto message_ = static_cast<cocos2d::Label*>( getChildByName( "text_message" ) );
             message_->setString( "now loading..." );
-            Texture2D** tex_dft_ = new Texture2D*[ 12 ];
-            Texture2D** tex_sls_ = new Texture2D*[ 45 ];
-            Texture2D** tex_thr_ = new Texture2D*[ 53 ];
-            std::thread t( [ this, tex_dft_, tex_sls_, tex_thr_, com_node_, bgm_id ]
+            auto tex_dft_ = std::make_shared<Texture2D*[ 12 ]>();
+            auto tex_sls_ = std::make_shared<Texture2D*[ 45 ]>();
+            auto tex_thr_ = std::make_shared<Texture2D*[ 53 ]>();
+            std::thread t{ [ this, tex_dft_, tex_sls_, tex_thr_, com_node_, bgm_id ]
             {
                 {
-                    std::lock_guard<std::mutex> lock( mtx );
-                    std::atomic_int cnt_dft_ = 0;
-                    std::atomic_int cnt_sls_ = 0;
-                    std::atomic_int cnt_thr_ = 0;
-                    auto load = []( Texture2D** buf_, std::atomic_int& cnt_, char const* format_, int num_ )
+                    int cnt_dft_ = 0;
+                    int cnt_sls_ = 0;
+                    int cnt_thr_ = 0;
+                    auto load = []( Texture2D** buf_, int& cnt_, char const* format_, int num_ )
                     {
                         auto cacher_ = Director::getInstance()->getTextureCache();
                         for( int i = 0; i <= num_; ++i )
@@ -199,9 +198,9 @@ bool title_scene::init( communication_node* com_node_ )
                             } );
                         }
                     };
-                    load( tex_dft_, cnt_dft_, "droid/idle/%d.png", 11 );
-                    load( tex_sls_, cnt_sls_, "droid/slash/%d.png", 44 );
-                    load( tex_thr_, cnt_thr_, "droid/thrust/%d.png", 52 );
+                    load( *tex_dft_, cnt_dft_, "droid/idle/%d.png", 11 );
+                    load( *tex_sls_, cnt_sls_, "droid/slash/%d.png", 44 );
+                    load( *tex_thr_, cnt_thr_, "droid/thrust/%d.png", 52 );
 
                     while( cnt_dft_ < 12 || cnt_sls_ < 45 || cnt_thr_ < 53 )
                     {
@@ -211,27 +210,31 @@ bool title_scene::init( communication_node* com_node_ )
                 auto scheduler = Director::getInstance()->getScheduler();
                 scheduler->performFunctionInCocosThread( [ this, tex_dft_, tex_sls_, tex_thr_, bgm_id ]
                 {
-                    auto cache = []( Texture2D** tex_, int num, const char *cache_name_, float duration_ )
+                    auto cache = []( Texture2D** tex_, int num_, const char *cache_name_, float duration_, bool reverse_ = false )
                     {
                         auto animation_cache_ = AnimationCache::getInstance();
                         auto animation_ = Animation::create();
-                        for( int i = 0; i <= num; ++i )
+                        for( int i = 0; i <= num_; ++i )
                         {
                             auto size_ = tex_[ i ]->getContentSize();
                             animation_->addSpriteFrameWithTexture( tex_[ i ], Rect{ 0, 0, size_.width, size_.height } );
+                        }
+                        if( reverse_ )
+                        {
+                            for( int i = num_; i >= 0; --i )
+                            {
+                                auto size_ = tex_[ i ]->getContentSize();
+                                animation_->addSpriteFrameWithTexture( tex_[ i ], Rect{ 0, 0, size_.width, size_.height } );
+                            }
                         }
                         animation_->setRestoreOriginalFrame( true ); // 再生時間とフレーム数がずれた時は最初からリピート
                         animation_->setDelayPerUnit( duration_ );
                         animation_cache_->addAnimation( animation_, cache_name_ );
                     };
 
-                    cache( tex_dft_, 11, "default", 1.f / 6 );
-                    cache( tex_sls_, 44, "slash", 0.9f / 44 );
-                    cache( tex_thr_, 52, "thrust", 1.2f / 52 );
-
-                    delete[] tex_dft_;
-                    delete[] tex_sls_;
-                    delete[] tex_thr_;
+                    cache( *tex_dft_, 11, "default", 1.f / 6, true );
+                    cache( *tex_sls_, 44, "slash", 0.9f / 44 );
+                    cache( *tex_thr_, 52, "thrust", 1.2f / 52 );
 
                     cocos2d::experimental::AudioEngine::stop( bgm_id );
                     auto com_node_ = static_cast<communication_node*>( getChildByName( "com_node" ) );
@@ -246,7 +249,7 @@ bool title_scene::init( communication_node* com_node_ )
                             );
                     Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget( this );
                 } );
-            } );
+            } };
             t.detach();
         }
     };

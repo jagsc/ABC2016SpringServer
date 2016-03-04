@@ -550,5 +550,12 @@ void player::damage( int dm_ )
                     } ),
                     nullptr ),
                 nullptr ) );
-    hp_ -= dm_;
+    if( dm_ >= hp_ )
+    {
+        hp_ = 0;
+    }
+    else
+    {
+        hp_ -= dm_;
+    }
 }

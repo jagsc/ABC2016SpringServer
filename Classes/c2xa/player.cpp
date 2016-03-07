@@ -436,7 +436,7 @@ void player::judge()
                                             }
                                             getParent()->addChild( eff, 30 );
                                         } ),
-                                        MoveTo::create( 0.4f, pos_1p ),
+                                        MoveTo::create( 0.4f, number_ == number::_1p ? pos_1p : pos_2p ),
                                         CallFunc::create( [ this, droid_ ]{
                                             is_doing_ = false;
                                             is_attacking_ = false;
@@ -456,6 +456,7 @@ void player::judge()
                         case action::guard:
                         {
                             auto adf = ParticleSystemQuad::create( "particle/adfield.plist" );
+                            adf->setName( "adf" );
                             adf->setPosition( droid_->getPosition() + Vec2{ number_ == number::_1p ? 200.f : -200.f, 0.f } );
                             adf->resetSystem();
                             addChild( adf, 40 );
@@ -489,6 +490,11 @@ void player::damage( int dm_ )
 
     auto droid_ = static_cast<cocos2d::Sprite*>( getChildByName( "droid" ) );
     droid_->stopAllActions();
+    auto adf_ = static_cast<cocos2d::ParticleSystemQuad*>( getChildByName( "adf" ) );
+    if( adf_ )
+    {
+        adf_->removeFromParent();
+    }
     auto a_ = RepeatForever::create( Animate::create( create_animation( "droid/idle/%d.png", "default", 0, 11, true ) ) );
     a_->setTag( 100 );
     droid_->runAction( a_ );

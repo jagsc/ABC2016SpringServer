@@ -2,6 +2,9 @@
 このプロジェクトはAndroid WearとWindowsを使ったゲームアプリ｢仕様なき戦い ウェアラブル編｣のサーバープログラムです。
 ABC2016Springに展示するために有志の学生が開発を行います。
 
+## Release
+https://github.com/JAG-SC/ABC2016SpringServer/releases
+
 ## デモプレイ
 ABC2016Springにてデモプレイを行います。
 

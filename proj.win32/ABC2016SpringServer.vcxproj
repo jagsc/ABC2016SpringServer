@@ -146,11 +146,23 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\app_delegate.cpp" />
     <ClCompile Include="..\Classes\c2xa\communication\bluetooth\server.cpp" />
+    <ClCompile Include="..\Classes\c2xa\communication\node.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\communication\windows_socket_api.cpp">
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="..\Classes\c2xa\initialize_scene.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\math\fast_fourier_transform.cpp" />
+    <ClCompile Include="..\Classes\c2xa\player.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Classes\c2xa\scene\battle_scene.cpp">
       <SubType>
       </SubType>
@@ -173,6 +185,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\app_delegate.hpp" />
     <ClInclude Include="..\Classes\c2xa\communication\bluetooth\server.hpp" />
+    <ClInclude Include="..\Classes\c2xa\communication\node.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\communication\windows_socket_api.hpp">
       <SubType>
       </SubType>
@@ -198,12 +214,24 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\initialize_scene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\math\fast_fourier_transform.hpp" />
     <ClInclude Include="..\Classes\c2xa\math\sample.hpp">
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\observer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Classes\c2xa\optional.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\player.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -227,6 +255,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Classes\c2xa\utility.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
@@ -245,7 +277,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ResourceCompile Include="game.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\data\sensor.csv" />
+    <Image Include="res\game.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

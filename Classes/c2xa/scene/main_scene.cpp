@@ -14,14 +14,8 @@ using namespace c2xa::scene;
 
 
 main_scene::main_scene()
-try
     : fft_{ sample::sampling_number }
 {
-}
-catch( c2xa::bluetooth_exception& e )
-{
-    cocos2d::log( e.error_.message.c_str() );
-    throw e;
 }
 
 main_scene::~main_scene()
@@ -99,16 +93,16 @@ void main_scene::update( float )
                     data_[ i * 2 + 1 ] =  map_[ tmp ];
                 }
 
-                for( auto&& i : communication::parse( data_ ) )
-                {
-                    sample_.push(
-                        static_cast<std::chrono::nanoseconds>( std::get<0>( i ) ),
-                        std::get<1>( i ),
-                        []( unsigned left_, unsigned right_, data before_data_, data data_ )
-                    {
-                        return ( data_ * left_ + before_data_ * right_ ) / ( left_ + right_ );
-                    } );
-                }
+                //for( auto&& i : communication::parse( data_ ) )
+                //{
+                //    sample_.push(
+                //        static_cast<std::chrono::nanoseconds>( std::get<0>( i ) ),
+                //        std::get<1>( i ),
+                //        []( unsigned left_, unsigned right_, data before_data_, data data_ )
+                //    {
+                //        return ( data_ * left_ + before_data_ * right_ ) / ( left_ + right_ );
+                //    } );
+                //}
 
                 auto viewer_ = static_cast<debug::sample_viewer*>( getChildByName( "sample_viewer" ) );
                 if( viewer_ )

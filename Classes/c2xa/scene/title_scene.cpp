@@ -11,8 +11,14 @@
 
 #include <c2xa/config.hpp>
 #include <c2xa/exception.hpp>
+#include <c2xa/player.hpp>
 #include <c2xa/scene/title_scene.hpp>
+#include <c2xa/scene/battle_scene.hpp>
+#include <c2xa/communication/node.hpp>
 
+#include <AudioEngine.h>
+
+using namespace c2xa;
 using namespace c2xa::scene;
 
 namespace
@@ -24,7 +30,7 @@ namespace
     static const cocos2d::Vec2 condition_2p_particle_{ c2xa::app_width - 500, c2xa::app_height - 790 };
 }
 
-bool title_scene::init()
+bool title_scene::init( communication_node* com_node_ )
 {
     using namespace cocos2d;
     if( !Scene::init() )
@@ -33,6 +39,13 @@ bool title_scene::init()
     }
     setName( "title_scene" );
     scheduleUpdate();
+
+    com_node_->retain();
+    com_node_->removeFromParent();
+    addChild( com_node_ );
+    com_node_->release();
+
+    auto bgm_id = cocos2d::experimental::AudioEngine::play2d( "snd/title_bgm.mp3", true, 0.3f, nullptr );
 
     auto bg_ = Sprite::create( "img/title_bg.png" );
     bg_->setAnchorPoint( Vec2::ANCHOR_BOTTOM_LEFT );
@@ -43,7 +56,7 @@ bool title_scene::init()
     logo_->setPosition( Vec2{ app_width - 100, app_height - 100 } );
     addChild( logo_, 10 );
 
-    auto particle_ = ParticleSystemQuad::create( "particle/fire.plist" );
+    auto particle_ = ParticleSystemQuad::create( "particle/spark.plist" );
     particle_->setPosition( Vec2{ app_width / 2, 0 } );
     particle_->resetSystem();
     addChild( particle_, 2 );
@@ -64,23 +77,183 @@ bool title_scene::init()
     auto blink_ = RepeatForever::create( Sequence::create( FadeTo::create( 0.3f, 255 ), FadeTo::create( 1.2f, 0 ), nullptr ) );
     text_message_->runAction( blink_ );
 
-    auto text_1p_ = Label::createWithTTF( "", "font/Stroke.ttf", 32 );
+    auto text_1p_ = Label::createWithTTF( com_node_->is_connection_1p() ? "1P: CONNECT" : "", "font/Stroke.ttf", 32 );
     text_1p_->setPosition( condition_1p_text_ + Vec2{ 7, 0 } );
     text_1p_->setColor( Color3B{ 255, 230, 99 } );
     text_1p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
     text_1p_->setName( "text_1p_condition" );
     addChild( text_1p_, 10 );
 
-    auto text_2p_ = Label::createWithTTF( "", "font/Stroke.ttf", 32 );
+    auto text_2p_ = Label::createWithTTF( com_node_->is_connection_2p() ? "2P: CONNECT" : "", "font/Stroke.ttf", 32 );
     text_2p_->setPosition( condition_2p_text_ );
     text_2p_->setColor( Color3B{ 255, 230, 99 } );
     text_2p_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
     text_2p_->setName( "text_2p_condition" );
     addChild( text_2p_, 11 );
 
-    listener_ = std::make_shared<bluetooth::listener>();
-    address_1p = 0;
-    address_2p = 0;
+    auto observer_1p = observer<connection_state>::create( [ this ]( connection_state state_ )
+    {
+        auto text_1p = static_cast<cocos2d::Label*>( getChildByName( "text_1p_condition" ) );
+        switch( state_ )
+        {
+            case connection_state::connect:
+            {
+                ready1p_ = true;
+
+                text_1p->setString( "1P: CONNECT" );
+                text_1p->setOpacity( 0 );
+                text_1p->runAction( FadeTo::create( 0.3f, 255 ) );
+
+                auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
+                particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+                particle_->setPosition( condition_1p_particle_ );
+                particle_->setAutoRemoveOnFinish( true );
+                addChild( particle_, 12 );
+
+                break;
+            }
+            case connection_state::disconnect:
+            {
+                ready1p_ = false;
+                text_1p->setString( "1P: DISCONNECT" );
+                break;
+            }
+            case connection_state::reconnect:
+            {
+                ready1p_ = true;
+                text_1p->setString( "1P: CONNECT" );
+                break;
+            }
+        }
+    } );
+    addChild( observer_1p );
+
+    auto observer_2p = observer<connection_state>::create( [ this ]( connection_state state_ )
+    {
+        auto text_2p = static_cast<cocos2d::Label*>( getChildByName( "text_2p_condition" ) );
+        switch( state_ )
+        {
+            case connection_state::connect:
+            {
+                ready2p_ = true;
+                text_2p->setString( "2P: CONNECT" );
+                text_2p->setOpacity( 0 );
+                text_2p->runAction( FadeTo::create( 0.3f, 255 ) );
+
+                auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
+                particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
+                particle_->setPosition( condition_2p_particle_ );
+                particle_->setAutoRemoveOnFinish( true );
+                addChild( particle_, 12 );
+
+                break;
+            }
+            case connection_state::disconnect:
+            {
+                ready2p_ = false;
+                text_2p->setString( "2P: DISCONNECT" );
+                break;
+            }
+            case connection_state::reconnect:
+            {
+                ready2p_ = true;
+                text_2p->setString( "2P: CONNECT" );
+                break;
+            }
+        }
+    } );
+    addChild( observer_2p );
+
+    com_node_->get_subject_1p()->registry_observer( observer_1p );
+    com_node_->get_subject_2p()->registry_observer( observer_2p );
+
+    auto dispatcher = Director::getInstance()->getEventDispatcher();
+    auto keyboard_listener_ = EventListenerKeyboard::create();
+    keyboard_listener_->onKeyPressed = [ = ]( EventKeyboard::KeyCode key_, Event* event_ )
+    {
+        if( com_node_->is_connection_1p() && com_node_->is_connection_2p() || key_ == EventKeyboard::KeyCode::KEY_D )
+        {
+            auto message_ = static_cast<cocos2d::Label*>( getChildByName( "text_message" ) );
+            message_->setString( "now loading..." );
+            auto tex_dft_ = std::make_shared<Texture2D*[ 12 ]>();
+            auto tex_sls_ = std::make_shared<Texture2D*[ 45 ]>();
+            auto tex_thr_ = std::make_shared<Texture2D*[ 53 ]>();
+            std::thread t{ [ this, tex_dft_, tex_sls_, tex_thr_, com_node_, bgm_id ]
+            {
+                {
+                    int cnt_dft_ = 0;
+                    int cnt_sls_ = 0;
+                    int cnt_thr_ = 0;
+                    auto load = []( Texture2D** buf_, int& cnt_, char const* format_, int num_ )
+                    {
+                        auto cacher_ = Director::getInstance()->getTextureCache();
+                        for( int i = 0; i <= num_; ++i )
+                        {
+                            char path_[ 128 ] ={};
+                            sprintf( path_, format_, i );
+                            cacher_->addImageAsync( path_, [ &cnt_, i, buf_ ]( Texture2D* texture_ )
+                            {
+                                buf_[ i ] = texture_;
+                                ++cnt_;
+                            } );
+                        }
+                    };
+                    load( *tex_dft_, cnt_dft_, "droid/idle/%d.png", 11 );
+                    load( *tex_sls_, cnt_sls_, "droid/slash/%d.png", 44 );
+                    load( *tex_thr_, cnt_thr_, "droid/thrust/%d.png", 52 );
+
+                    while( cnt_dft_ < 12 || cnt_sls_ < 45 || cnt_thr_ < 53 )
+                    {
+                        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+                    }
+                }
+                auto scheduler = Director::getInstance()->getScheduler();
+                scheduler->performFunctionInCocosThread( [ this, tex_dft_, tex_sls_, tex_thr_, bgm_id ]
+                {
+                    auto cache = []( Texture2D** tex_, int num_, const char *cache_name_, float duration_, bool reverse_ = false )
+                    {
+                        auto animation_cache_ = AnimationCache::getInstance();
+                        auto animation_ = Animation::create();
+                        for( int i = 0; i <= num_; ++i )
+                        {
+                            auto size_ = tex_[ i ]->getContentSize();
+                            animation_->addSpriteFrameWithTexture( tex_[ i ], Rect{ 0, 0, size_.width, size_.height } );
+                        }
+                        if( reverse_ )
+                        {
+                            for( int i = num_; i >= 0; --i )
+                            {
+                                auto size_ = tex_[ i ]->getContentSize();
+                                animation_->addSpriteFrameWithTexture( tex_[ i ], Rect{ 0, 0, size_.width, size_.height } );
+                            }
+                        }
+                        animation_->setRestoreOriginalFrame( true ); // 再生時間とフレーム数がずれた時は最初からリピート
+                        animation_->setDelayPerUnit( duration_ );
+                        animation_cache_->addAnimation( animation_, cache_name_ );
+                    };
+
+                    cache( *tex_dft_, 11, "default", 1.f / 6, true );
+                    cache( *tex_sls_, 44, "slash", 0.9f / 44 );
+                    cache( *tex_thr_, 52, "thrust", 1.2f / 52 );
+
+                    cocos2d::experimental::AudioEngine::stop( bgm_id );
+                    auto com_node_ = static_cast<communication_node*>( getChildByName( "com_node" ) );
+                    com_node_->send_1p( "scene:battle", 12 );
+                    com_node_->send_2p( "scene:battle", 12 );
+                    Director::getInstance()
+                        ->replaceScene(
+                            TransitionFade::create(
+                                1.0f,
+                                battle_scene::create( com_node_ )
+                                )
+                            );
+                    Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget( this );
+                } );
+            } };
+            t.detach();
+        }
+    };
+    dispatcher->addEventListenerWithSceneGraphPriority( keyboard_listener_, this );
 
     return true;
 }
@@ -89,126 +262,16 @@ void title_scene::update( float )
 {
     using namespace cocos2d;
 
-    auto text_message_ = static_cast<cocos2d::Label*>( getChildByName( "text_message" ) );
-    auto text_1p = static_cast<cocos2d::Label*>( getChildByName( "text_1p_condition" ) );
-    auto text_2p = static_cast<cocos2d::Label*>( getChildByName( "text_2p_condition" ) );
-
-    if( listener_ )
+    auto com_node_ = static_cast<communication_node*>( getChildByName( "com_node" ) );
+    if( com_node_ )
     {
-        auto accepted_ = listener_->accept();
-        if( accepted_ )
+        com_node_->receive_1p( []( auto&& com_, auto&& buffer_ )
         {
-            do
-            {
-                if( !connection_1p )
-                {
-                    if( address_1p == 0 )
-                    {
-                        // 初接続
-                        connection_1p = std::move( *accepted_ );
-                        address_1p = connection_1p->get_client_address();
-                        text_1p->setString( "1P: CONNECT" );
-                        text_1p->setOpacity( 0 );
-                        text_1p->runAction( FadeTo::create( 0.3f, 255 ) );
-
-                        auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
-                        particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-                        particle_->setPosition( condition_1p_particle_ );
-                        particle_->setAutoRemoveOnFinish( true );
-                        addChild( particle_, 12 );
-
-                        break;
-                    }
-                    else if( address_1p == ( *accepted_ )->get_client_address() )
-                    {
-                        // 1p 再接続
-                        connection_1p = std::move( *accepted_ );
-                        text_1p->setString( "1P: CONNECT" );
-                        break;
-                    }
-                }
-                if( !connection_2p )
-                {
-                    if( address_2p == 0 )
-                    {
-                        // 初接続
-                        connection_2p = std::move( *accepted_ );
-                        address_2p = connection_2p->get_client_address();
-                        text_2p->setString( "2P: CONNECT" );
-
-                        auto particle_ = ParticleSystemQuad::create( "particle/entry.plist" );
-                        particle_->setAnchorPoint( Vec2::ANCHOR_TOP_LEFT );
-                        particle_->setPosition( condition_2p_particle_ );
-                        particle_->setAutoRemoveOnFinish( true );
-                        addChild( particle_, 12 );
-
-                        break;
-                    }
-                    else if( address_2p == ( *accepted_ )->get_client_address() )
-                    {
-                        // 2p 再接続
-                        connection_2p = std::move( *accepted_ );
-                        text_2p->setString( "2P: CONNECT" );
-                        break;
-                    }
-                }
-            }
-            while( false );
-            if( connection_1p && connection_2p )
-            {
-                listener_.reset();
-            }
-        }
-    }
-
-    if( connection_1p )
-    {
-        auto receive = [ this ]()
+            com_->send_1p();
+        } );
+        com_node_->receive_2p( []( auto&& com_, auto&& buffer_ )
         {
-            std::memset( buffer_, '\0', sizeof( buffer_ ) );
-            return connection_1p->receive( buffer_, sizeof( buffer_ ), 0 );
-        };
-        try
-        {
-            auto state_ = receive();
-            while( state_ == bluetooth::connection::socket_state::success )
-            {
-                state_ = receive();
-            }
-        }
-        catch( bluetooth_disconnect_exception const& e )
-        {
-            connection_1p.reset();
-            text_1p->setString( "1P: DISCONNECT" );
-            if( !listener_ )
-            {
-                listener_ = std::make_shared<bluetooth::listener>();
-            }
-        }
-    }
-    if( connection_2p )
-    {
-        auto receive = [ this ]
-        {
-            std::memset( buffer_, '\0', sizeof( buffer_ ) );
-            return connection_2p->receive( buffer_, sizeof( buffer_ ), 0 );
-        };
-        try
-        {
-            auto state_ = receive();
-            while( state_ == bluetooth::connection::socket_state::success )
-            {
-                state_ = receive();
-            }
-        }
-        catch( bluetooth_disconnect_exception const& e )
-        {
-            connection_2p.reset();
-            text_2p->setString( "2P: DISCONNECT" );
-            if( !listener_ )
-            {
-                listener_ = std::make_shared<bluetooth::listener>();
-            }
-        }
+            com_->send_2p();
+        } );
     }
 }

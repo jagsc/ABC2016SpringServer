@@ -20,6 +20,7 @@
 #include <array>
 #include <tuple>
 #include <chrono>
+#include <fstream>
 
 namespace c2xa
 {
@@ -44,8 +45,8 @@ namespace c2xa
             static constexpr integer analysis_line_number     = sampling_number * 100 / 256;
             static constexpr unsigned long double window_size          = sampling_number / sampling_frequency;
             static constexpr std::chrono::nanoseconds::rep sampling_period  = 1000000000 / sampling_frequency; //< nanoseconds
-            static constexpr unsigned long double frequency_resolution = 1 / window_size;
-            
+            //static constexpr unsigned long double frequency_resolution = 1 / window_size;
+            std::ofstream ofs{ "Y:\\jagsc\\test.csv" };
         private:
             std::list<element> list_;
             std::chrono::nanoseconds before_time_;
@@ -64,7 +65,6 @@ namespace c2xa
                 else
                 {
                     // データが次のサンプリングポイントを超えた
-                    int i = 0;
                     while( timestamp_ >= next_ )
                     {
                         auto right_ = timestamp_ - next_;
@@ -74,6 +74,7 @@ namespace c2xa
                         // ( data_ * left_ + before_data_ * right_ ) / ( left_ + right_ )
 
                         list_.push_back( std::tie( next_, func_( static_cast<unsigned>( left_.count() ), static_cast<unsigned>( right_.count() ), before_data_, data_ ) ) );
+                        ofs << data_.acceleration.x << "," << data_.acceleration.y << "," << data_.acceleration.z << "," << data_.gyro.x << "," << data_.gyro.y << "," << data_.gyro.z <<std::endl;
 
                         if( list_.size() > sampling_number )
                         {
@@ -81,9 +82,7 @@ namespace c2xa
                         }
 
                         next_ += std::chrono::nanoseconds{ sampling_period };
-                        ++i;
                     }
-                    cocos2d::log( "[sample] %d sampling point was skiped", i );
                 }
                 before_time_ = timestamp_;
                 before_data_ = data_;
